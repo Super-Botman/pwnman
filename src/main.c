@@ -1,15 +1,15 @@
-// #include "lib/io.h"
-#include "lib/malloc.h"
+#include "libotman.h"
 
 int main(int argc, char *argv[], char *envp[]) {
- void* c1 = malloc(0x90);
- realloc(c1, 0x50);
- malloc(0x10);
- 
- return 0;
-}
+  while(1){
+    printf("> ");
+    char* line = getline();
 
-// [MALLOC] ret: 0x404010, size: 0xa0
-// [FREE] ptr: 0x404010, size: 0xa0
-// [MALLOC] ret: 0x404010, size: 0x50
-// [REALLOC] ret: 0x404010, size: 0x60
+    if(strcmp(line, "exit") == 0) break;
+    else if(strncmp(line, "echo ", 5) == 0) printf("%s\n", line+5);
+    else puts("unknown command");
+
+    free(line);
+  }
+  return 0;
+}

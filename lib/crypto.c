@@ -3,6 +3,8 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "libotman.h"
+
 unsigned int crc32(const unsigned char *message, unsigned int len) {
    int i, j;
    unsigned int byte, crc, mask;

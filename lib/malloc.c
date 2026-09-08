@@ -1,17 +1,4 @@
-#include "crypto.h"
-#include "io.h"
-#include "types.h"
-
-struct chunk {
-  long sig;
-  int prev;
-  int size;
-};
-
-struct meta {
-  void *fd;
-  void *bk;
-};
+#include "libotman.h"
 
 void *base = 0;
 void *top = 0;
@@ -134,7 +121,6 @@ void *malloc(size_t size) {
   chk->sig = sig(chk);
   ret = chk2ptr(chk);
 ret:
-  printf("[MALLOC] ret: 0x%p, size: 0x%p\n", ret, size);
   return ret;
 }
 
@@ -148,7 +134,6 @@ void free(void *ptr) {
   }
 
   struct chunk *chk = ptr2chk(ptr);
-  printf("[FREE] ptr: 0x%p, size: 0x%p\n", ptr, getsize(chk));
 
   if (isfree(chk)) {
     puts("invalid free operation (double free)\n");
@@ -315,6 +300,5 @@ void *realloc(void *ptr, size_t size) {
   }
 
 ret:
-  printf("[REALLOC] ret: 0x%p, size: 0x%p\n", ret, size);
   return ret;
 }

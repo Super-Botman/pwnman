@@ -1,4 +1,4 @@
-#include "types.h"
+#include "libotman.h"
 
 [[noreturn]] void exit(int status) {
   __asm__ volatile("mov $60, %%rax\n"
@@ -7,6 +7,7 @@
                    :
                    : "r"((long)status)
                    :);
+  __builtin_unreachable();
 }
 
 ssize_t getrandom(char *buf, size_t count) {
