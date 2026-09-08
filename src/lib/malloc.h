@@ -43,7 +43,7 @@ void *brk(void *brk) {
 #define checksig(chk) (chk->sig == sig(chk))
 
 long sig(struct chunk *chk) {
-  unsigned long cookie = chk->size + chk->prev;
+  unsigned long cookie = chk->size + chk->prev + key;
   if (isfree(chk)) {
     struct meta *meta = chk2meta(chk);
     cookie += (long)meta->fd + (long)meta->bk;
@@ -127,9 +127,12 @@ void *malloc(size_t size) {
     goto ret;
   }
 
-  puts("invalid malloc operation (out of bound)\n");
-  exit(-1);
+  struct chunk *chk = (struct chunk *)top;
+  top = brk(chk2ptr((char *)top + size));
 
+  chk->size = size;
+  chk->sig = sig(chk);
+  ret = chk2ptr(chk);
 ret:
   printf("[MALLOC] ret: 0x%p, size: 0x%p\n", ret, size);
   return ret;
@@ -161,7 +164,7 @@ void free(void *ptr) {
   chk->size = chk_size | FREE;
   struct meta *meta = (struct meta *)ptr;
 
-  struct chunk *next_chk = (struct chunk *)((char *)chk + chk_size);
+  struct chunk *next_chk = (struct chunk *)((char *)ptr + chk_size);
   if (inheap(next_chk) && isfree(next_chk) && checksig(next_chk)) {
     size_t next_size = getsize(next_chk);
     chk_size += next_size;
@@ -191,7 +194,7 @@ void free(void *ptr) {
     next_meta->bk = 0;
   }
 
-  struct chunk *prev_chk = (struct chunk *)((char *)chk - chk->prev);
+  struct chunk *prev_chk = (struct chunk *)((char *)chk - chk->prev - sizeof(struct chunk));
   if (prev_chk && inheap(prev_chk) && isfree(prev_chk) && checksig(prev_chk)) {
     size_t prev_size = getsize(prev_chk);
     prev_size += chk_size;
@@ -217,7 +220,7 @@ void free(void *ptr) {
     freed = meta;
   }
 
-  struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
+  struct chunk *following_chk = (struct chunk *)((char *)ptr + chk_size);
   if (inheap(following_chk)) {
     following_chk->prev = chk_size;
     following_chk->sig = sig(following_chk);
@@ -234,6 +237,7 @@ void *realloc(void *ptr, size_t size) {
   size_t chk_size = getsize(chk);
 
   if (size == chk_size) goto ret;
+
   if (size > chk_size) {
     if (!inheap(ptr+size)) {
       brk(top+(size-chk_size));
@@ -243,13 +247,72 @@ void *realloc(void *ptr, size_t size) {
     }
 
     struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
-    if (inheap(following_chk) && following_chk->size < size-chk_size) {
-      // TODO: take some memory from here
-    }
-  } else {
-    // TODO: shrink chunk
-  }
+    int more = size-chk_size;
+    
+    if (isfree(following_chk) && inheap(following_chk) && following_chk->size > more) {
+      chk->size = size;
+      chk->sig = sig(chk);
 
+      struct chunk *new_chk = (struct chunk*)((char*)ptr + size);
+      struct meta *new_meta = chk2meta(new_chk);
+      struct meta *following_meta = chk2meta(following_chk);
+      int new_size = following_chk->size-more | FREE;
+      struct meta *new_fd = following_meta->fd;
+      struct meta *new_bk = following_meta->bk;
+
+      following_chk->prev = 0;
+      following_chk->size = 0;
+      following_chk->sig = 0;
+      following_meta->fd = 0;
+      following_meta->bk = 0;
+
+      new_chk->size = new_size;
+      new_chk->prev = size;
+      new_meta->fd = new_fd; 
+      new_meta->bk = new_bk; 
+      new_chk->sig = sig(new_chk);
+
+      if (new_fd) {
+        new_fd->bk = new_meta;
+        struct chunk *c = ptr2chk(new_fd);
+        c->sig = sig(c);
+      }
+      if (new_bk) {
+        new_bk->fd = new_meta;
+        struct chunk *c = ptr2chk(new_bk);
+        c->sig = sig(c);
+      } else {
+        freed = new_meta;
+      }
+      
+      goto ret;
+    }
+
+    ret = malloc(size);
+    memcpy(ret, ptr, chk_size);
+    free(ptr);
+    goto ret;
+  } else {
+    int less = chk_size - size;
+    chk->size = size;
+    chk->sig = sig(chk);
+
+    struct chunk *new_chk = (struct chunk *)((char *)ptr + size);
+    struct meta *new_meta = chk2meta(new_chk);
+    new_chk->size = less | FREE;
+    new_chk->prev = size;
+    new_meta->bk = freed;
+    new_meta->fd = 0;
+
+    if (freed) {
+      freed->fd = new_chk;
+      struct chunk *c = ptr2chk(freed);
+      c->sig = sig(c);
+    }
+
+    freed = chk2meta(new_chk);
+    new_chk->sig = sig(new_chk);
+  }
 
 ret:
   printf("[REALLOC] ret: 0x%p, size: 0x%p\n", ret, size);

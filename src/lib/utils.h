@@ -9,17 +9,22 @@
                    :);
 }
 
-int getrandom(char *buf, size_t count) {
-  int ret;
-  __asm__ volatile("mov $318, %%rax\n"
-                   "mov %1, %%rdi\n"
+ssize_t getrandom(char *buf, size_t count) {
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
                    "mov %2, %%rsi\n"
+                   "mov $318, %%rax\n"
                    "mov $0, %%rdx\n"
                    "syscall\n"
                    : "=a"(ret)
                    : "r"(buf), "r"(count)
-                   : "rdi", "rsi", "rdx");
+                   : "%rdi", "%rsi");
   return ret;
+}
+
+void *memcpy(char *dest, char* src, size_t n){
+  for (int i = 0; i < n; i++) dest[i] = src[i];
+  return dest;
 }
 
 int itoa(int num, char *str, int base) {
