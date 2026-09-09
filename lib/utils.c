@@ -10,6 +10,15 @@
   __builtin_unreachable();
 }
 
+void close(int fd) {
+  __asm__ volatile("mov $3, %%rax\n"
+                   "mov %0, %%rdi\n"
+                   "syscall\n"
+                   :
+                   : "r"((long)fd)
+                   :);
+}
+
 ssize_t getrandom(char *buf, size_t count) {
   ssize_t ret;
   __asm__ volatile("mov %1, %%rdi\n"
@@ -19,6 +28,19 @@ ssize_t getrandom(char *buf, size_t count) {
                    "syscall\n"
                    : "=a"(ret)
                    : "r"(buf), "r"(count)
+                   : "%rdi", "%rsi");
+  return ret;
+}
+
+int rename(char *oldpath, char* newpath) {
+  int ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov $82, %%rax\n"
+                   "mov $0, %%rdx\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"(oldpath), "r"(newpath)
                    : "%rdi", "%rsi");
   return ret;
 }
@@ -60,7 +82,7 @@ int wait(int pid, int wstatus) {
   return ret;
 }
 
-ssize_t open(const char *path, int flags, int *mode) {
+ssize_t open(const char *path, int flags, int mode) {
   ssize_t ret;
   __asm__ volatile("mov %1, %%rdi\n"
                    "mov %2, %%rsi\n"
@@ -72,7 +94,6 @@ ssize_t open(const char *path, int flags, int *mode) {
                    : "rdi", "rsi", "rdx");
   return ret;
 }
-
 
 size_t lseek(int fd, size_t offset, int whence){
   ssize_t ret;
@@ -99,23 +120,31 @@ void *memset(char *src, int c, size_t n) {
   return src;
 }
 
+char* strdup(char* str){
+  size_t len = strlen(str);
+  char *ret = malloc(len);
+  if (ret>0)
+    memcpy(ret, str, len);
+  return ret;
+}
+
 int itoa(int num, char *str, int base) {
   if (num < 0) {
     *str++ = '-';
     num = -num;
   }
 
-  char tmp[17];
-  tmp[16] = '\0';
+  char buf[17];
+  buf[16] = '\0';
 
   int i = 15;
   while (i) {
-    tmp[i] = num % base;
+    buf[i] = num % base;
 
-    if (tmp[i] < 10)
-      tmp[i] += '0';
+    if (buf[i] < 10)
+      buf[i] += '0';
     else
-      tmp[i] += 'a' - 10;
+      buf[i] += 'a' - 10;
 
     num /= base;
     if (num == 0)
@@ -123,7 +152,7 @@ int itoa(int num, char *str, int base) {
     i--;
   }
 
-  char *tp = (char *)&tmp + i;
+  char *tp = (char *)&buf + i;
   while (*tp)
     *str++ = *tp++;
   *str++ = '\0';

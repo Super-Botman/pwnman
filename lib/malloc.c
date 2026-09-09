@@ -24,7 +24,7 @@ void *brk(void *brk) {
 #define chk2ptr(ptr) (void *)((long)ptr + sizeof(struct chunk))
 #define chk2meta(ptr) (struct meta *)((long)ptr + sizeof(struct chunk))
 #define getsize(chk) (chk->size & ~0xf)
-#define align(size) ((size & ~0xf) + 0x10)
+#define align(size) ((size + 0xf) & 0xf)
 #define isfree(chk) (chk->size & FREE)
 #define inheap(chk) ((void *)chk >= base && (void *)chk <= top)
 #define checksig(chk) (chk->sig == sig(chk))
@@ -103,7 +103,7 @@ void *malloc(size_t size) {
       struct chunk *prev_chk = ptr2chk(prev_meta);
       prev_chk->sig = sig(prev_chk);
     } else
-      freed = (struct meta*)updated_fd;
+      freed = (struct meta *)updated_fd;
 
     curr->fd = 0;
     curr->bk = 0;
@@ -179,7 +179,8 @@ void free(void *ptr) {
     next_meta->bk = 0;
   }
 
-  struct chunk *prev_chk = (struct chunk *)((char *)chk - chk->prev - sizeof(struct chunk));
+  struct chunk *prev_chk =
+      (struct chunk *)((char *)chk - chk->prev - sizeof(struct chunk));
   if (prev_chk && inheap(prev_chk) && isfree(prev_chk) && checksig(prev_chk)) {
     size_t prev_size = getsize(prev_chk);
     prev_size += chk_size;
@@ -215,33 +216,35 @@ void free(void *ptr) {
 }
 
 void *realloc(void *ptr, size_t size) {
-  void* ret = ptr;
+  void *ret = ptr;
   size = align(size);
 
   struct chunk *chk = ptr2chk(ptr);
   size_t chk_size = getsize(chk);
 
-  if (size == chk_size) goto ret;
+  if (size == chk_size)
+    goto ret;
 
   if (size > chk_size) {
-    if (!inheap(ptr+size)) {
-      brk(top+(size-chk_size));
+    if (!inheap(ptr + size)) {
+      brk(top + (size - chk_size));
       chk->size = size;
       chk->sig = sig(chk);
       goto ret;
     }
 
     struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
-    int more = size-chk_size;
-    
-    if (isfree(following_chk) && inheap(following_chk) && following_chk->size > more) {
+    int more = size - chk_size;
+
+    if (isfree(following_chk) && inheap(following_chk) &&
+        following_chk->size > more) {
       chk->size = size;
       chk->sig = sig(chk);
 
-      struct chunk *new_chk = (struct chunk*)((char*)ptr + size);
+      struct chunk *new_chk = (struct chunk *)((char *)ptr + size);
       struct meta *new_meta = chk2meta(new_chk);
       struct meta *following_meta = chk2meta(following_chk);
-      int new_size = following_chk->size-more | FREE;
+      int new_size = (following_chk->size - more) | FREE;
       struct meta *new_fd = following_meta->fd;
       struct meta *new_bk = following_meta->bk;
 
@@ -253,8 +256,8 @@ void *realloc(void *ptr, size_t size) {
 
       new_chk->size = new_size;
       new_chk->prev = size;
-      new_meta->fd = new_fd; 
-      new_meta->bk = new_bk; 
+      new_meta->fd = new_fd;
+      new_meta->bk = new_bk;
       new_chk->sig = sig(new_chk);
 
       if (new_fd) {
@@ -269,7 +272,7 @@ void *realloc(void *ptr, size_t size) {
       } else {
         freed = new_meta;
       }
-      
+
       goto ret;
     }
 
