@@ -1,9 +1,5 @@
 #include "../lib/libotman.h"
 
-/* ------------------------------------------------------------------ */
-/* Types and structures                                                */
-/* ------------------------------------------------------------------ */
-
 typedef unsigned int u32;
 typedef unsigned short u16;
 
@@ -36,9 +32,6 @@ struct command {
   void (*func)(struct db *, char *arg);
 };
 
-/* ------------------------------------------------------------------ */
-/* Globals and forward declarations                                    */
-/* ------------------------------------------------------------------ */
 
 char *master_passwd;
 
@@ -57,9 +50,6 @@ void edit(struct db *db, char *arg);
 void new(struct db *db, char *_);
 void exitdb(struct db *_, char *__);
 
-/* ------------------------------------------------------------------ */
-/* Crypto helpers                                                      */
-/* ------------------------------------------------------------------ */
 
 int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   char *key = master_passwd;
@@ -107,9 +97,6 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   return 0;
 }
 
-/* ------------------------------------------------------------------ */
-/* Field extraction helpers                                            */
-/* ------------------------------------------------------------------ */
 
 void get_title(struct entry *entry, char *title) {
   memset(title, 0, sizeof(entry->title));
@@ -138,9 +125,6 @@ void get_user(struct fields *fields, char *user) {
   memcpy(user, fields->username, fields->ulen);
 }
 
-/* ------------------------------------------------------------------ */
-/* Entry commands                                                      */
-/* ------------------------------------------------------------------ */
 
 void list(struct db *db, char *_) {
   if (db->count == 0) {
@@ -342,9 +326,6 @@ void delete(struct db *db, char *arg) {
   db->edited |= 1;
 }
 
-/* ------------------------------------------------------------------ */
-/* Database commands                                                   */
-/* ------------------------------------------------------------------ */
 
 void opendb(struct db *db, char *path) {
   if (db->entries) {
@@ -453,9 +434,6 @@ void help(struct db *_, char *__) {
     puts(commands[i].usage);
 }
 
-/* ------------------------------------------------------------------ */
-/* Command table                                                       */
-/* ------------------------------------------------------------------ */
 
 struct command commands[] = {
     {"help", "help: show this help", help},
@@ -472,9 +450,6 @@ struct command commands[] = {
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 
-/* ------------------------------------------------------------------ */
-/* Main loop                                                           */
-/* ------------------------------------------------------------------ */
 
 int main(int argc, char *argv[], char *envp[]) {
   puts("PASSWORD MANAGER 1.0");
