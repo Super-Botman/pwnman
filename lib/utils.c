@@ -23,8 +23,59 @@ ssize_t getrandom(char *buf, size_t count) {
   return ret;
 }
 
-void *memcpy(char *dest, char* src, size_t n){
-  for (int i = 0; i < n; i++) dest[i] = src[i];
+ssize_t execve(const char *path, const char *argv, const char *envp) {
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov %3, %%rdx\n"
+                   "mov $59, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"(path), "r"(argv), "r"(envp)
+                   : "rdi", "rsi", "rdx");
+  return ret;
+}
+
+int fork() {
+  ssize_t ret;
+  __asm__ volatile("mov $58, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   :
+                   :);
+  return ret;
+}
+
+int wait(int pid, int wstatus) {
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov $0, %%rdx\n"
+                   "mov $0, %%r10\n"
+                   "mov $61, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"((long)pid), "r"((long)wstatus)
+                   : "rdi", "rsi", "rdx");
+  return ret;
+}
+
+ssize_t open(const char *path, int flags, int *mode) {
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov %3, %%rdx\n"
+                   "mov $2, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"(path), "r"((long)flags), "r"((long)mode)
+                   : "rdi", "rsi", "rdx");
+  return ret;
+}
+
+void *memcpy(char *dest, char *src, size_t n) {
+  for (int i = 0; i < n; i++)
+    dest[i] = src[i];
   return dest;
 }
 

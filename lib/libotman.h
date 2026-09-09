@@ -10,6 +10,7 @@ ssize_t read(int fd, char *buf, long count);
 char* getline();
 int putc(char c);
 int puts(const char *str);
+int put(const char *str);
 int putn(int num, int base);
 int printf(const char *format, ...);
 
@@ -18,6 +19,11 @@ int printf(const char *format, ...);
 ssize_t getrandom(char *buf, size_t count);
 void *memcpy(char *dest, char* src, size_t n);
 int itoa(int num, char *str, int base);
+ssize_t execve(const char *path, const char *argv, const char *envp);
+int fork();
+int wait(int pid, int wstatus);
+int strlen(const char* s);
+ssize_t open(const char *path, int flags, int *mode);
 
 // crypto
 unsigned int crc32(const unsigned char *message, unsigned int len);

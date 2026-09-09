@@ -2,10 +2,10 @@
 
 ssize_t write(int fd, char *buf, long count) {
   ssize_t ret;
-  __asm__ volatile("mov $1, %%rax\n"
-                   "mov %1, %%rdi\n"
+  __asm__ volatile("mov %1, %%rdi\n"
                    "mov %2, %%rsi\n"
                    "mov %3, %%rdx\n"
+                   "mov $1, %%rax\n"
                    "syscall\n"
                    : "=a"(ret)
                    : "r"((long)fd), "r"(buf), "r"(count)
@@ -15,10 +15,10 @@ ssize_t write(int fd, char *buf, long count) {
 
 ssize_t read(int fd, char *buf, long count) {
   ssize_t ret;
-  __asm__ volatile("mov $0, %%rax\n"
-                   "mov %1, %%rdi\n"
+  __asm__ volatile("mov %1, %%rdi\n"
                    "mov %2, %%rsi\n"
                    "mov %3, %%rdx\n"
+                   "mov $0, %%rax\n"
                    "syscall\n"
                    : "=a"(ret)
                    : "r"((long)fd), "r"(buf), "r"(count)
@@ -42,13 +42,13 @@ char *getline() {
 
 int putc(char c) { return write(1, &c, 1); }
 
+int put(const char *str) {
+  int len = strlen(str);
+  return write(0, (char *)str, len);
+}
+
 int puts(const char *str) {
-  for (;;) {
-    if (*str == 0)
-      break;
-    putc(*str);
-    str++;
-  }
+  put(str);
   putc('\n');
   return 0;
 }
@@ -56,8 +56,7 @@ int puts(const char *str) {
 int putn(int num, int base) {
   char str[16];
   int ret = itoa(num, (char *)&str, base);
-
-  puts((char *)&str);
+  put((char *)&str);
   return ret;
 }
 
@@ -75,30 +74,25 @@ int printf(const char *format, ...) {
 
     switch (*++fp) {
     case 'd':
-      count += putn(__builtin_va_arg(ap, int), 10);
+      putn(__builtin_va_arg(ap, int), 10);
       break;
     case 'p':
-      puts("0x");
-      count += putn((long)__builtin_va_arg(ap, void *), 16);
+      put("0x");
+      putn((long)__builtin_va_arg(ap, void *), 16);
       break;
-    case 's': {
+    case 's':
       const char *s = __builtin_va_arg(ap, char *);
-      puts(s);
-      while (*s++)
-        count++;
-    } break;
+      put(s);
+      break;
     case 'c':
       putc(__builtin_va_arg(ap, int));
-      count++;
       break;
     case '%':
       putc('%');
-      count++;
       break;
     default:
       putc('%');
       putc(*fp);
-      count += 2;
     }
   }
 
