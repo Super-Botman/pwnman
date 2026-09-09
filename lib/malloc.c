@@ -229,7 +229,7 @@ void *realloc(void *ptr, size_t size) {
     struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
     int more = size - chk_size;
 
-    if (!inheap(ptr + size) && !following_chk) {
+    if (!inheap(ptr + size) && !inheap(following_chk)) {
       top = brk(top + (size - chk_size));
       chk->size = size;
       chk->sig = sig(chk);
