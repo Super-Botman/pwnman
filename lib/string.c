@@ -18,8 +18,8 @@ int strncmp(const char *s1, const char *s2, int n) {
   return *(const unsigned char *)s1 - *(const unsigned char *)s2;
 }
 
-int strlen(const char* s){
+size_t strlen(const char* s){
   const char* start = s;
-  while(*s) s++;
+  while(*s) ++s;
   return s-start; 
 }

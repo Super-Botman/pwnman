@@ -56,7 +56,7 @@ ssize_t execve(const char *path, const char *argv, const char *envp);
 int fork();
 size_t lseek(int fd, size_t offset, int whence);
 int wait(int pid, int wstatus);
-int strlen(const char* s);
+size_t strlen(const char* s);
 ssize_t open(const char *path, int flags, int mode);
 char* strdup(char* str);
 int rename(char* oldpath, char* newpath);
