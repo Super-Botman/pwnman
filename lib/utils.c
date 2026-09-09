@@ -58,6 +58,20 @@ ssize_t execve(const char *path, const char *argv, const char *envp) {
   return ret;
 }
 
+
+ssize_t ioctl(unsigned int fd, unsigned int cmd, unsigned long args) {
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov %3, %%rdx\n"
+                   "mov $16, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"((long)fd), "r"((long)cmd), "r"(args)
+                   : "rdi", "rsi", "rdx");
+  return ret;
+}
+
 int fork() {
   ssize_t ret;
   __asm__ volatile("mov $58, %%rax\n"

@@ -1,4 +1,6 @@
 #include "../lib/libotman.h"
+#include "./ioctls.h"
+#include "./termbits.h"
 
 typedef unsigned int u32;
 typedef unsigned short u16;
@@ -32,7 +34,6 @@ struct command {
   void (*func)(struct db *, char *arg);
 };
 
-
 char *master_passwd;
 
 extern struct command commands[];
@@ -50,12 +51,28 @@ void edit(struct db *db, char *arg);
 void new(struct db *db, char *_);
 void exitdb(struct db *_, char *__);
 
+void echo_off() {
+  struct termios state;
+  (void)ioctl(0, (int)TCGETS, (long)&state);
+  state.c_lflag &= ~ECHO;
+  (void)ioctl(0, (int)TCSETS, (long)&state);
+}
+
+void echo_on() {
+  struct termios state;
+  (void)ioctl(0, (int)TCGETS, (long)&state);
+  state.c_lflag |= ECHO;
+  (void)ioctl(0, (int)TCSETS, (long)&state);
+}
 
 int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   char *key = master_passwd;
   if (!key) {
-    printf("Enter password > ");
+    printf("Master password: ");
+    echo_off();
     key = getline();
+    echo_on();
+    puts("");
   }
 
   if (encrypt)
@@ -97,7 +114,6 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   return 0;
 }
 
-
 void get_title(struct entry *entry, char *title) {
   memset(title, 0, sizeof(entry->title));
   if (entry->tlen >= sizeof(entry->title)) {
@@ -125,7 +141,6 @@ void get_user(struct fields *fields, char *user) {
   memcpy(user, fields->username, fields->ulen);
 }
 
-
 void list(struct db *db, char *_) {
   if (db->count == 0) {
     puts("no entry in db");
@@ -142,6 +157,55 @@ void list(struct db *db, char *_) {
     printf("%d: %s\n", i, title);
     entries += sizeof(struct entry);
   }
+}
+
+static void draw_line(int t, int u, int p, int s) {
+  putc(s);
+  for (int i = 0; i < t + 2; i++)
+    putc('-');
+  putc(s);
+  for (int i = 0; i < u + 2; i++)
+    putc('-');
+  putc(s);
+  for (int i = 0; i < p + 2; i++)
+    putc('-');
+  putc(s);
+  putc('\n');
+}
+static void print_padded(const char *str, int width) {
+  int len = (int)strlen(str);
+  put(str);
+  for (int i = len; i < width; i++)
+    putc(' ');
+}
+
+static void print_row(int t, const char *title, int u, const char *username,
+                      int p, const char *password) {
+  printf("| ");
+  print_padded(title, t);
+  printf(" | ");
+  print_padded(username, u);
+  printf(" | ");
+  print_padded(password, p);
+  printf(" |\n");
+}
+
+void print_table(struct entry *entry, struct fields fields) {
+  char title[65], username[65], password[65];
+  get_title(entry, title);
+  get_user(&fields, username);
+  get_pass(&fields, password);
+
+  /* largeur max entre le contenu et l'en-tête */
+  int tlen = (int)strlen(title) > 5 ? (int)strlen(title) : 5;
+  int ulen = (int)strlen(username) > 8 ? (int)strlen(username) : 8;
+  int plen = (int)strlen(password) > 8 ? (int)strlen(password) : 8;
+
+  draw_line(tlen, ulen, plen, '+');
+  print_row(tlen, "title", ulen, "username", plen, "password");
+  draw_line(tlen, ulen, plen, '|');
+  print_row(tlen, title, ulen, username, plen, password);
+  draw_line(tlen, ulen, plen, '+');
 }
 
 void show(struct db *db, char *arg) {
@@ -162,22 +226,13 @@ void show(struct db *db, char *arg) {
   struct entry *entry =
       (struct entry *)(db->entries + (sizeof(struct entry) * idx));
 
-  char title[65];
-  get_title(entry, &title[0]);
-  printf("title: %s\n", title);
-
   struct fields fields;
   if (crypt(entry, &fields, 0) < 0) {
     puts("invalid entry or password");
     return;
   }
 
-  char tmp[65];
-  get_user(&fields, &tmp[0]);
-  printf("username: %s\n", tmp);
-
-  get_pass(&fields, &tmp[0]);
-  printf("password: %s\n", tmp);
+  print_table(entry, fields);
 }
 
 void edit(struct db *db, char *arg) {
@@ -269,7 +324,7 @@ void new(struct db *db, char *_) {
       (struct entry *)(db->entries + new_size - sizeof(struct entry));
   memset((char *)new_entry, 0, sizeof(struct entry));
 
-  printf("Title (max 64) > ");
+  printf("Title (max 64): ");
   size_t len = read(0, new_entry->title, 64);
   if (new_entry->title[len - 1] == '\n') {
     new_entry->title[len - 1] = '\0';
@@ -278,23 +333,24 @@ void new(struct db *db, char *_) {
   new_entry->tlen = len;
 
   struct fields *new_fields = &new_entry->fields;
-  printf("Username (max 64) > ");
-  len = read(0, new_fields->username, 64);
-  if (new_fields->username[len - 1] == '\n') {
-    new_fields->username[len - 1] = '\0';
-    len -= 1;
-  }
-  getrandom(new_fields->username + len, 64 - len);
-  new_fields->ulen = len;
 
-  printf("Password (max 64) > ");
-  len = read(0, new_fields->password, 64);
-  if (new_fields->password[len - 1] == '\n') {
-    new_fields->password[len - 1] = '\0';
+  printf("Username (max 64): ");
+  len = read(0, new_fields->username, 64);
+  if (len > 0 && new_fields->username[len - 1] == '\n') {
     len -= 1;
   }
-  getrandom(new_fields->password + len, 64 - len);
+  new_fields->username[len] = '\0';
+  new_fields->ulen = len;
+  getrandom(new_fields->username + len + 1, 64 - len);
+
+  printf("Password (max 64): ");
+  len = read(0, new_fields->password, 64);
+  if (len > 0 && new_fields->password[len - 1] == '\n') {
+    len -= 1;
+  }
+  new_fields->password[len] = '\0';
   new_fields->plen = len;
+  getrandom(new_fields->password + len + 1, 64 - len);
 
   crypt(new_entry, new_fields, 1);
   db->edited |= 1;
@@ -325,7 +381,6 @@ void delete(struct db *db, char *arg) {
   db->entries = realloc(file_content, new_size - 16) + 16;
   db->edited |= 1;
 }
-
 
 void opendb(struct db *db, char *path) {
   if (db->entries) {
@@ -434,7 +489,6 @@ void help(struct db *_, char *__) {
     puts(commands[i].usage);
 }
 
-
 struct command commands[] = {
     {"help", "help: show this help", help},
     {"open", "open <file>: open the db specified by file", opendb},
@@ -449,7 +503,6 @@ struct command commands[] = {
     {"exit", "exit: exit without saving", exitdb},
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
-
 
 int main(int argc, char *argv[], char *envp[]) {
   puts("PASSWORD MANAGER 1.0");
@@ -488,3 +541,5 @@ int main(int argc, char *argv[], char *envp[]) {
   puts("bye");
   return 0;
 }
+
+// TODO: no password = segfault;

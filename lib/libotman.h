@@ -57,6 +57,7 @@ int fork();
 size_t lseek(int fd, size_t offset, int whence);
 int wait(int pid, int wstatus);
 size_t strlen(const char* s);
+ssize_t ioctl(unsigned int fd, unsigned int cmd, unsigned long args);
 ssize_t open(const char *path, int flags, int mode);
 char* strdup(char* str);
 int rename(char* oldpath, char* newpath);
