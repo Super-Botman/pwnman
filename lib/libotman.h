@@ -60,6 +60,7 @@ int strlen(const char* s);
 ssize_t open(const char *path, int flags, int mode);
 char* strdup(char* str);
 int rename(char* oldpath, char* newpath);
+int atoi(char* str);
 
 // crypto
 unsigned int crc32(const unsigned char *message, unsigned int len);

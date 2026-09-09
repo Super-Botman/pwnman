@@ -24,7 +24,7 @@ void *brk(void *brk) {
 #define chk2ptr(ptr) (void *)((long)ptr + sizeof(struct chunk))
 #define chk2meta(ptr) (struct meta *)((long)ptr + sizeof(struct chunk))
 #define getsize(chk) (chk->size & ~0xf)
-#define align(size) ((size + 0xf) & 0xf)
+#define align(size) ((size + 0xf) & ~0xf)
 #define isfree(chk) (chk->size & FREE)
 #define inheap(chk) ((void *)chk >= base && (void *)chk <= top)
 #define checksig(chk) (chk->sig == sig(chk))
@@ -226,15 +226,15 @@ void *realloc(void *ptr, size_t size) {
     goto ret;
 
   if (size > chk_size) {
-    if (!inheap(ptr + size)) {
-      brk(top + (size - chk_size));
+    struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
+    int more = size - chk_size;
+
+    if (!inheap(ptr + size) && !following_chk) {
+      top = brk(top + (size - chk_size));
       chk->size = size;
       chk->sig = sig(chk);
       goto ret;
     }
-
-    struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
-    int more = size - chk_size;
 
     if (isfree(following_chk) && inheap(following_chk) &&
         following_chk->size > more) {

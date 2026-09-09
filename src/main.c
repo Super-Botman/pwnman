@@ -18,9 +18,11 @@ struct entry {
   struct fields fields;
 };
 
-struct entries {
+struct db {
+  int edited;
+  char *path;
   size_t count;
-  char *db;
+  char *entries;
 };
 
 char *master_passwd;
@@ -99,23 +101,23 @@ void get_user(struct fields *fields, char *user) {
   memcpy(user, fields->username, fields->ulen);
 }
 
-void list(struct entries *entries) {
+void list(struct db *db) {
   char title[65];
-  printf("number of entries: %d\n", entries->count);
+  printf("number of entries: %d\n", db->count);
 
-  char *db = entries->db;
-  for (int i = 0; i < entries->count; i++) {
-    struct entry *entry = (struct entry *)db;
+  char *entries = db->entries;
+  for (int i = 0; i < db->count; i++) {
+    struct entry *entry = (struct entry *)entries;
     get_title(entry, &title[0]);
     printf("%d: %s\n", i, title);
-    db += sizeof(struct entry);
+    entries += sizeof(struct entry);
   }
   return;
 }
 
-void show(struct entries *entries, size_t idx) {
+void show(struct db *db, size_t idx) {
   struct entry *entry =
-      (struct entry *)(entries->db + (sizeof(struct entry) * idx));
+      (struct entry *)(db->entries + (sizeof(struct entry) * idx));
 
   char title[65];
   get_title(entry, &title[0]);
@@ -135,30 +137,31 @@ void show(struct entries *entries, size_t idx) {
   printf("password: %s\n", tmp);
 }
 
-void edit(struct entries *entries, size_t idx) {
+int edit(struct db *db, size_t idx) {
   struct entry *entry =
-      (struct entry *)(entries->db + (sizeof(struct entry) * idx));
+      (struct entry *)(db->entries + (sizeof(struct entry) * idx));
 
   struct fields new_fields;
   if (crypt(entry, &new_fields, 0) < 0) {
     puts("invalid password");
-    return;
+    return 0;
   }
 
   char title[65];
   int title_len = entry->tlen;
   get_title(entry, &title[0]);
   while (1) {
-    printf("[%s]> ", title);
+    printf("[%s ~ %s]> ", db->path, title);
+
     char *line = getline();
     size_t len = strlen(line);
 
     if (strcmp(line, "help") == 0) {
       puts("Edit mode");
-      puts("title: change title");
-      puts("username: change username");
-      puts("password: change password");
-      puts("save: save the updated entry");
+      puts("title <title>: change title");
+      puts("username <username>: change username");
+      puts("password <password>: change password");
+      puts("save: save the updated entry into memory");
       puts("exit: exit without saving");
     } else if (strncmp(line, "title ", 6) == 0) {
       memset(&title[0], 0, sizeof(title));
@@ -185,31 +188,32 @@ void edit(struct entries *entries, size_t idx) {
       break;
     } else if (strcmp(line, "exit") == 0) {
       free(line);
-      return;
+      return 0;
     } else {
       puts("unknown command");
     }
 
     free(line);
   }
-  return;
+  return 1;
 }
 
-void new(struct entries *entries) {
-  if (!master_passwd && entries->count > 0) {
+int new(struct db *db) {
+  if (!master_passwd && db->count > 0) {
     struct fields fields;
-    if (crypt((struct entry *)entries->db, &fields, 0) < 0) {
+    if (crypt((struct entry *)db->entries, &fields, 0) < 0) {
       puts("invalid password");
-      return;
+      return 0;
     }
   }
 
-  entries->count += 1;
-  size_t new_size = entries->count * sizeof(struct entry);
-  entries->db = realloc(entries->db, new_size);
+  db->count += 1;
+  size_t new_size = db->count * sizeof(struct entry);
+  char *file_content = db->entries - 16;
+  db->entries = realloc(file_content, new_size + 16) + 16;
 
   struct entry *new_entry =
-      (struct entry *)(entries->db + new_size - sizeof(struct entry));
+      (struct entry *)(db->entries + new_size - sizeof(struct entry));
   memset((char *)new_entry, 0, sizeof(struct entry));
 
   printf("Title (max 64) > ");
@@ -240,10 +244,11 @@ void new(struct entries *entries) {
   new_fields->plen = len;
 
   crypt(new_entry, new_fields, 1);
+  return 1;
 }
 
-int opendb(char *path, struct entries *entries) {
-  int fd = open(path, O_RDWR, 0);
+int opendb(struct db *db) {
+  int fd = open(db->path, O_RDWR, 0);
   if (fd < 0) {
     puts("error while opening the db");
     return -1;
@@ -265,94 +270,175 @@ int opendb(char *path, struct entries *entries) {
   }
 
   file_content += 16;
-  size_t entries_size = file_size - 16;
-  size_t entries_count = entries_size / sizeof(struct entry);
-  entries->db = file_content;
-  entries->count = entries_count;
+  size_t db_size = file_size - 16;
+  size_t db_count = db_size / sizeof(struct entry);
+  db->entries = file_content;
+  db->count = db_count;
 
   return fd;
 }
 
-void save(struct entries *entries, char *path) {
-  int tmp = open(".tmp.db", O_WRONLY | O_CREAT, 0644);
-  int len = entries->count * (sizeof(struct entry)) + 16;
-  char *file_content = (char *)(entries->db - 16);
+int save(struct db *db, char *path) {
+  int tmp = open(".tmp.db", O_WRONLY | O_CREAT | O_EXCL, 0644);
+  if (tmp < 0) {
+    puts("cannot save");
+    return 1;
+  }
+  int len = db->count * (sizeof(struct entry)) + 16;
+  char *file_content = (char *)(db->entries - 16);
   if (write(tmp, file_content, len) != len) {
     puts("failed to write");
-    return;
+    return 1;
   }
   if (rename(".tmp.db", path) < 0) {
     puts("failed to save");
-    return;
+    return 1;
   }
+  return 0;
+}
+
+int createdb(struct db *db) {
+  int fd = open(db->path, O_WRONLY | O_CREAT | O_EXCL, 0644);
+  if (fd < 0) {
+    puts("failed to create the new db");
+    return -1;
+  }
+
+  char header[16] = "B0T\0\0\0\0\0\0\0\0\0\0\0\0\0";
+  if (write(fd, &header[0], 16) != 16) {
+    puts("failed to write header");
+    return -1;
+  }
+  close(fd);
+  return 0;
+}
+
+int delete(struct db *db, int idx){
+  size_t offset = idx*sizeof(struct entry); 
+  size_t size = db->count*sizeof(struct entry);
+
+  struct entry *entry = (struct entry*)(db->entries + offset);
+  struct entry *next = entry + 1; 
+
+  size_t diff = size - (offset+sizeof(struct entry));
+  memcpy((char*)entry, (char*)next, diff);
+
+  db->count -= 1;
+  size_t new_size = db->count * sizeof(struct entry);
+  char *file_content = db->entries - 16;
+  db->entries = realloc(file_content, new_size - 16) + 16;
+  return 1;
 }
 
 int main(int argc, char *argv[], char *envp[]) {
-  struct entries entries;
-  memset((char *)&entries, 0, sizeof(struct entries));
+  struct db db;
+  memset((char *)&db, 0, sizeof(struct db));
   int fd = 0;
-  char *dbpath;
 
+  puts("PASSWORD MANAGER 1.0");
   while (1) {
-    printf("> ");
+    if (!db.path)
+      printf("> ");
+    else if (db.edited)
+      printf("[*%s]> ", db.path);
+    else
+      printf("[%s]> ", db.path);
+
     char *line = getline();
 
     if (strcmp(line, "help") == 0) {
-      puts("PASSWORD MANAGER 1.0");
       puts("open <file>: open the db specified by file");
-      puts("show <idx>: show the password");
+      puts("close: close the db");
+      puts("save: save the db");
       puts("list: show the list of password stored");
-      puts("exit: exit the program");
+      puts("show <idx>: show an entry");
+      puts("edit <idx>: edit an entry");
+      puts("delete <idx>: delete an entry");
+      puts("new: add an entry");
+      puts("exit: save db and exit the program");
     } else if (strncmp(line, "open ", 5) == 0) {
-      if (entries.db) {
+      if (db.entries) {
         puts("db already opened, close it before opening another");
       } else {
         char *path = line + 5;
-        dbpath = strdup(path);
-        fd = opendb(path, &entries);
-        if (fd > 0)
-          puts("success");
+        db.path = strdup(path);
+        fd = opendb(&db);
+        if (fd < 0) {
+          free(db.path);
+          db.path = 0;
+        }
+      }
+    } else if (strncmp(line, "create ", 7) == 0) {
+      if (db.entries) {
+        puts("db already opened, close it before opening another");
+      } else {
+        char *path = line + 7;
+        db.path = strdup(path);
+        createdb(&db);
+        fd = opendb(&db);
+        if (fd < 0) {
+          free(db.path);
+          db.path = 0;
+        }
       }
     } else if (strcmp(line, "list") == 0) {
-      if (entries.count != 0)
-        list(&entries);
+      if (db.count != 0)
+        list(&db);
       else
-        puts("no entries in db");
+        puts("no entry in db");
     } else if (strncmp(line, "show ", 5) == 0) {
-      if (entries.count != 0)
-        // TODO: atoi
-        show(&entries, *(line + 5) - '0');
-      else
-        puts("no entries in db");
+      if (db.count != 0) {
+        int idx = atoi(line + 5);
+        if (idx < db.count)
+          show(&db, idx);
+        else
+          puts("invalid index");
+      } else {
+        puts("no entry in db");
+      }
     } else if (strncmp(line, "edit ", 5) == 0) {
-      if (entries.count != 0)
-        // TODO: atoi
-        edit(&entries, *(line + 5) - '0');
-      else
-        puts("no entries in db");
+      if (db.count != 0) {
+        int idx = atoi(line + 5);
+        if (idx < db.count)
+          db.edited |= edit(&db, idx);
+        else
+          puts("invalid index");
+      } else {
+        puts("no entry in db");
+      }
+    } else if (strncmp(line, "delete ", 7) == 0) {
+      if (db.count != 0) {
+        int idx = atoi(line + 7);
+        if (idx < db.count)
+          db.edited |= delete(&db, idx);
+        else
+          puts("invalid index");
+      } else {
+        puts("no entry in db");
+      }
     } else if (strcmp(line, "new") == 0) {
-      if (entries.db)
-        new(&entries);
+      if (db.entries)
+        db.edited |= new(&db);
       else
         puts("db not initialized, did you open it ?");
     } else if (strcmp(line, "save") == 0) {
-      if (entries.db)
-        save(&entries, dbpath);
+      if (db.entries)
+        db.edited = save(&db, db.path);
       else
         puts("db not initialized, did you open it ?");
     } else if (strcmp(line, "close") == 0) {
-      if (entries.db) {
-        save(&entries, dbpath);
-        free(entries.db - 16);
-        memset((char *)&entries, 0, sizeof(struct entries));
+      if (db.entries) {
+        save(&db, db.path);
+        free(db.entries - 16);
+        memset((char *)&db, 0, sizeof(struct db));
         fd = 0;
-        free(dbpath);
-        dbpath = 0;
+        free(db.path);
+        db.path = 0;
       } else {
         puts("db not initialized, did you open it ?");
       }
     } else if (strcmp(line, "exit") == 0) {
-      save(&entries, dbpath);
+      save(&db, db.path);
       break;
     } else {
       puts("unkown command");
