@@ -1,4 +1,4 @@
-from pwn import pack, unpack, xor, hexdump
+from pwn import pack, unpack, xor
 from random import randbytes
 
 def crc32(message: bytes) -> int:
@@ -29,7 +29,6 @@ def entry(title, username, password, key):
     header += title.ljust(64, b'\x00')
 
     dentry = eentry(username, password)
-    print(hexdump(dentry))
     return header + xor(dentry, key)
 
 master = b"superpass"
@@ -40,29 +39,29 @@ entries += entry(b"proton", b"botman", b"pass4", master)
 content = header+entries
 file.write(content)
 
-def decrypt(content, key):
-    if content[:4] != b'B0T\x00':
-        print("nop")
-        return
+# def decrypt(content, key):
+#     if content[:4] != b'B0T\x00':
+#         print("nop")
+#         return
 
-    entry = content[16:]
-    tsize = unpack(entry[:4], 32)
-    title = entry[8:8+tsize].decode()
-    print("title:", title)
+#     entry = content[16:]
+#     tsize = unpack(entry[:4], 32)
+#     title = entry[8:8+tsize].decode()
+#     print("title:", title)
 
-    eentry = entry[8+64:]
-    dentry = xor(eentry, key)
-    sig = unpack(dentry[:4], 32)
-    if sig != crc32(dentry[4:4+64+64+32]):
-        print("nop")
-        return
+#     eentry = entry[8+64:]
+#     dentry = xor(eentry, key)
+#     sig = unpack(dentry[:4], 32)
+#     if sig != crc32(dentry[4:4+64+64+32]):
+#         print("nop")
+#         return
     
-    usize = unpack(dentry[4:6], 16)
-    psize = unpack(dentry[6:8], 16)
-    username = dentry[8:8+usize].decode()
-    password = dentry[8+64:8+64+psize].decode()
-    print("username:", username)
-    print("password:", password)
+#     usize = unpack(dentry[4:6], 16)
+#     psize = unpack(dentry[6:8], 16)
+#     username = dentry[8:8+usize].decode()
+#     password = dentry[8+64:8+64+psize].decode()
+#     print("username:", username)
+#     print("password:", password)
 
 
-decrypt(content, b"superpass")
+# decrypt(content, b"superpass")

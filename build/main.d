@@ -1,2 +1,2 @@
-build/main.o: src/main.c lib/libotman.h
-lib/libotman.h:
+build/main.o: src/main.c src/../lib/libotman.h
+src/../lib/libotman.h:
