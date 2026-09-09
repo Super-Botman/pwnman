@@ -73,10 +73,30 @@ ssize_t open(const char *path, int flags, int *mode) {
   return ret;
 }
 
+
+size_t lseek(int fd, size_t offset, int whence){
+  ssize_t ret;
+  __asm__ volatile("mov %1, %%rdi\n"
+                   "mov %2, %%rsi\n"
+                   "mov %3, %%rdx\n"
+                   "mov $8, %%rax\n"
+                   "syscall\n"
+                   : "=a"(ret)
+                   : "r"((long)fd), "r"(offset), "r"((long)whence)
+                   : "rdi", "rsi", "rdx");
+  return ret;
+}
+
 void *memcpy(char *dest, char *src, size_t n) {
   for (int i = 0; i < n; i++)
     dest[i] = src[i];
   return dest;
+}
+
+void *memset(char *src, int c, size_t n) {
+  for (int i = 0; i < n; i++)
+    src[i] = 0;
+  return src;
 }
 
 int itoa(int num, char *str, int base) {

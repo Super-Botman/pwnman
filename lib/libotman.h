@@ -4,6 +4,11 @@
 typedef unsigned long long size_t;
 typedef long long ssize_t;
 
+
+#define SEEK_SET	0	/* seek relative to beginning of file */
+#define SEEK_CUR	1	/* seek relative to current file position */
+#define SEEK_END	2	/* seek relative to end of file */
+
 // io
 ssize_t write(int fd, char *buf, long count);
 ssize_t read(int fd, char *buf, long count);
@@ -18,9 +23,11 @@ int printf(const char *format, ...);
 [[noreturn]] void exit(int status);
 ssize_t getrandom(char *buf, size_t count);
 void *memcpy(char *dest, char* src, size_t n);
+void *memset(char* src, int c, size_t n);
 int itoa(int num, char *str, int base);
 ssize_t execve(const char *path, const char *argv, const char *envp);
 int fork();
+size_t lseek(int fd, size_t offset, int whence);
 int wait(int pid, int wstatus);
 int strlen(const char* s);
 ssize_t open(const char *path, int flags, int *mode);
