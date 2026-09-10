@@ -47,11 +47,14 @@ void new(struct db *db, char *_) {
   printf("Password (max 64): ");
   len = readline(new_fields->password, sizeof new_fields->password);
   if (len == 0) {
+    printf("Password: ");
     for(int i = 0; i < 64; i++){
-      new_fields->password[i] = randchar();
+      char chr = randchar();
+      putc(chr);
+      new_fields->password[i] = chr;
     }
+    putc('\n');
     len = 64;
-    printf("Password: %s\n", new_fields->password);
   }
   getrandom(new_fields->password + len + 1, 64 - len - 1);
   new_fields->plen = len;
