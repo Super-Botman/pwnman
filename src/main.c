@@ -25,12 +25,12 @@ struct command commands[] = {
     {"close", "close: save and close the actual db", closedb},
     {"save", "save: save the actual db", savedb},
     {"list", "list: list all the entries of a db", list},
+    {"search", "search <title>: search for an element by title", search},
     {"show", "show <idx>: show the password of one entry", show},
     {"delete", "delete <idx>: delete one entry", delete},
     {"edit", "edit <idx>: edit one entry", edit},
     {"new", "new: create a new entry", new},
     {"exit", "exit: exit without saving", exitdb},
-    {"search", "search: search for an element", search}
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 

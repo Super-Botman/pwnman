@@ -34,7 +34,7 @@ def entry(title, username, password, key):
 master = b"superpass"
 entries = entry(b"proton", b"botman", b"pass1", master)
 for i in range(100):
-    entries += entry(b"google", b"botman", b"pass2", master)
+    entries += entry(f"google{i}".encode(), b"botman", b"pass2", master)
 content = header+entries
 file.write(content)
 
