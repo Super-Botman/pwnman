@@ -137,18 +137,20 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   size_t password_len = strlen(key);
 
   unsigned char *dest;
-  const unsigned char *src;
+  unsigned char *src;
   if (!encrypt) {
     dest = (unsigned char *)fields;
-    src = (const unsigned char *)&entry->fields;
+    src = (unsigned char *)&entry->fields;
   } else {
     dest = (unsigned char *)&entry->fields;
-    src = (const unsigned char *)fields;
+    src = (unsigned char *)fields;
   }
 
   if (password_len) {
     for (size_t i = 0; i < sizeof(struct fields); i++)
       dest[i] = src[i] ^ key[i % password_len];
+  } else {
+    memcpy(dest, src, sizeof(struct fields));
   }
 
   if (!encrypt) {
@@ -263,6 +265,7 @@ void show(struct db *db, char *arg) {
       (struct entry *)(db->entries + (sizeof(struct entry) * idx));
 
   struct fields fields;
+  memset((char*)&fields, 0, sizeof(struct fields));
   if (crypt(entry, &fields, 0) < 0) {
     puts("invalid entry or password");
     return;
