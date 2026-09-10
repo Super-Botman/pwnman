@@ -1,7 +1,10 @@
-<<<<<<< HEAD
 <div align="center"><pre><h3>0x41sh</h3></pre></div>
+
+<<<<<<< HEAD
 =======
+
 # Password manager
+
 - help: show help
 - open: open a db
 - create: create a new db
@@ -9,6 +12,7 @@
 - search: search a password
 
 ## DB
+
 magic: B0T\0
 
 string {
