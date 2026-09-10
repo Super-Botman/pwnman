@@ -90,11 +90,12 @@ void *malloc(size_t size) {
     void *updated_fd = next_meta;
 
     if (chk_size > size) {
-      struct chunk *new_chk = (struct chunk *)((char *)chk + size);
+      struct chunk *new_chk =
+          (struct chunk *)((char *)chk + size + sizeof(struct chunk));
       struct meta *new_meta = chk2meta(new_chk);
 
       new_chk->prev = size;
-      new_chk->size = (chk_size - size) | FREE;
+      new_chk->size = (chk_size - size - sizeof(struct chunk)) | FREE;
 
       new_meta->fd = next_meta;
       new_meta->bk = prev_meta;
@@ -217,7 +218,8 @@ void free(void *ptr) {
     freed = meta;
   }
 
-  struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size + sizeof(struct chunk));
+  struct chunk *following_chk =
+      (struct chunk *)((char *)chk + chk_size + sizeof(struct chunk));
   if (inheap(following_chk)) {
     following_chk->prev = chk_size;
     following_chk->sig = sig(following_chk);
@@ -237,7 +239,7 @@ void *realloc(void *ptr, size_t size) {
     goto ret;
 
   if (size > chk_size) {
-    struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size);
+    struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size + sizeof(struct chunk));
     int more = size - chk_size;
 
     if (isfree(following_chk) && inheap(following_chk) &&
