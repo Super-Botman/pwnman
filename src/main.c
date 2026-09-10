@@ -23,7 +23,6 @@ struct entry {
 struct db {
   int edited;
   char *path;
-  int fd;
   size_t count;
   char *entries;
 };
@@ -65,6 +64,61 @@ void echo_on() {
   (void)ioctl(0, (int)TCSETS, (long)&state);
 }
 
+#define MAX_COLS 8
+
+static void draw_line(const int *widths, int col) {
+  putc('+');
+  for (int c = 0; c < col; c++)
+    for (int i = 0; i < widths[c] + 2; i++)
+      putc('-');
+  putc(col ? '\n' : '+'), putc('\n');
+}
+
+static void print_padded(const char *str, int width) {
+  put(str);
+  for (int i = (int)strlen(str); i < width; i++)
+    putc(' ');
+}
+
+static void print_row(const int *widths, int col, char *const *items) {
+  for (int c = 0; c < col; c++) {
+    printf("| ");
+    print_padded(items[c], widths[c]);
+    putc(' ');
+  }
+  printf("|\n");
+}
+
+void print_table(int col, ...) {
+  if (col < 1 || col > MAX_COLS)
+    return;
+
+  __builtin_va_list ap;
+  __builtin_va_start(ap, col);
+
+  char *headers[MAX_COLS];
+  char *values[MAX_COLS];
+  int widths[MAX_COLS];
+
+  for (int c = 0; c < col; c++)
+    headers[c] = __builtin_va_arg(ap, char *);
+
+  for (int c = 0; c < col; c++) {
+    values[c] = __builtin_va_arg(ap, char *);
+    int h = (int)strlen(headers[c]);
+    int v = (int)strlen(values[c]);
+    widths[c] = h > v ? h : v;
+  }
+
+  __builtin_va_end(ap);
+
+  draw_line(widths, col);
+  print_row(widths, col, headers);
+  draw_line(widths, col);
+  print_row(widths, col, values);
+  draw_line(widths, col);
+}
+
 int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   char *key = master_passwd;
   if (!key) {
@@ -90,8 +144,10 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
     src = (const unsigned char *)fields;
   }
 
-  for (size_t i = 0; i < sizeof(struct fields); i++)
-    dest[i] = src[i] ^ key[i % password_len];
+  if (password_len) {
+    for (size_t i = 0; i < sizeof(struct fields); i++)
+      dest[i] = src[i] ^ key[i % password_len];
+  }
 
   if (!encrypt) {
     u32 sig = crc32((char *)&fields->ulen, sizeof(struct fields) - 4);
@@ -159,55 +215,6 @@ void list(struct db *db, char *_) {
   }
 }
 
-static void draw_line(int t, int u, int p, int s) {
-  putc(s);
-  for (int i = 0; i < t + 2; i++)
-    putc('-');
-  putc(s);
-  for (int i = 0; i < u + 2; i++)
-    putc('-');
-  putc(s);
-  for (int i = 0; i < p + 2; i++)
-    putc('-');
-  putc(s);
-  putc('\n');
-}
-static void print_padded(const char *str, int width) {
-  int len = (int)strlen(str);
-  put(str);
-  for (int i = len; i < width; i++)
-    putc(' ');
-}
-
-static void print_row(int t, const char *title, int u, const char *username,
-                      int p, const char *password) {
-  printf("| ");
-  print_padded(title, t);
-  printf(" | ");
-  print_padded(username, u);
-  printf(" | ");
-  print_padded(password, p);
-  printf(" |\n");
-}
-
-void print_table(struct entry *entry, struct fields fields) {
-  char title[65], username[65], password[65];
-  get_title(entry, title);
-  get_user(&fields, username);
-  get_pass(&fields, password);
-
-  /* largeur max entre le contenu et l'en-tête */
-  int tlen = (int)strlen(title) > 5 ? (int)strlen(title) : 5;
-  int ulen = (int)strlen(username) > 8 ? (int)strlen(username) : 8;
-  int plen = (int)strlen(password) > 8 ? (int)strlen(password) : 8;
-
-  draw_line(tlen, ulen, plen, '+');
-  print_row(tlen, "title", ulen, "username", plen, "password");
-  draw_line(tlen, ulen, plen, '|');
-  print_row(tlen, title, ulen, username, plen, password);
-  draw_line(tlen, ulen, plen, '+');
-}
-
 void show(struct db *db, char *arg) {
   if (db->count == 0) {
     puts("no entry in db");
@@ -232,7 +239,12 @@ void show(struct db *db, char *arg) {
     return;
   }
 
-  print_table(entry, fields);
+  char title[65], username[65], password[65];
+  get_title(entry, title);
+  get_user(&fields, username);
+  get_pass(&fields, password);
+
+  print_table(3, "title", "username", "password", title, username, password);
 }
 
 void edit(struct db *db, char *arg) {
@@ -417,7 +429,6 @@ void opendb(struct db *db, char *path) {
   size_t db_count = db_size / sizeof(struct entry);
   db->entries = file_content;
   db->count = db_count;
-  db->fd = fd;
   db->path = strdup(path);
 }
 
@@ -479,7 +490,7 @@ void closedb(struct db *db, char *path) {
   savedb(db, "");
   free(db->entries - 16);
   free(db->path);
-  memset((char *)db, 0, sizeof(struct db));
+  memset((char*)db, 0, sizeof(struct db));
 }
 
 void exitdb(struct db *_, char *__) { exit(0); }
@@ -541,5 +552,3 @@ int main(int argc, char *argv[], char *envp[]) {
   puts("bye");
   return 0;
 }
-
-// TODO: no password = segfault;
