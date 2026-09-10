@@ -67,11 +67,12 @@ void echo_on() {
 #define MAX_COLS 8
 
 static void draw_line(const int *widths, int col) {
-  putc('+');
+  putc('-');
   for (int c = 0; c < col; c++)
     for (int i = 0; i < widths[c] + 2; i++)
       putc('-');
-  putc(col ? '\n' : '+'), putc('\n');
+  putc('-');
+  putc('\n');
 }
 
 static void print_padded(const char *str, int width) {
@@ -82,11 +83,12 @@ static void print_padded(const char *str, int width) {
 
 static void print_row(const int *widths, int col, char *const *items) {
   for (int c = 0; c < col; c++) {
-    printf("| ");
+    if (c)
+      printf("| ");
     print_padded(items[c], widths[c]);
     putc(' ');
   }
-  printf("|\n");
+  putc('\n');
 }
 
 void print_table(int col, ...) {
@@ -197,21 +199,48 @@ void get_user(struct fields *fields, char *user) {
   memcpy(user, fields->username, fields->ulen);
 }
 
+#define TITLE_MAX 64
+#define ID_WIDTH 4
+
+static void print_separator(int len) {
+  for (int i = 0; i < len; i++)
+    putc('-');
+  putc('\n');
+}
+
+static void print_pad_num(int num, int width) {
+  char buf[ID_WIDTH + 1];
+  int len = itoa(num, buf, 10);
+
+  for (int i = len; i < width; i++)
+    putc(' ');
+  put(buf);
+}
+
 void list(struct db *db, char *_) {
   if (db->count == 0) {
     puts("no entry in db");
     return;
   }
 
-  char title[65];
-  printf("number of entries: %d\n", db->count);
+  const int width = ID_WIDTH + TITLE_MAX + 4;
+  struct entry *entry = (struct entry *)db->entries;
 
-  char *entries = db->entries;
-  for (int i = 0; i < db->count; i++) {
-    struct entry *entry = (struct entry *)entries;
-    get_title(entry, &title[0]);
-    printf("%d: %s\n", i, title);
-    entries += sizeof(struct entry);
+  print_separator(width);
+  puts("   id | title");
+  print_separator(width);
+
+  for (int i = 0; i < db->count; i++, entry++) {
+    char title[TITLE_MAX + 1];
+
+    get_title(entry, title);
+
+    putc(' ');
+    print_pad_num(i, ID_WIDTH);
+    printf(" | %s", title);
+    putc('\n');
+
+    print_separator(width);
   }
 }
 
@@ -490,7 +519,7 @@ void closedb(struct db *db, char *path) {
   savedb(db, "");
   free(db->entries - 16);
   free(db->path);
-  memset((char*)db, 0, sizeof(struct db));
+  memset((char *)db, 0, sizeof(struct db));
 }
 
 void exitdb(struct db *_, char *__) { exit(0); }
@@ -552,3 +581,5 @@ int main(int argc, char *argv[], char *envp[]) {
   puts("bye");
   return 0;
 }
+
+// TODO: invalid entry or password when no passwd
