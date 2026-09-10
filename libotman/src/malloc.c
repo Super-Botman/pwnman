@@ -46,7 +46,7 @@ long sig(struct chunk *chk) {
     struct meta *meta = chk2meta(chk);
     cookie += (long)meta->fd + (long)meta->bk;
   };
-  return crc32((char *)&cookie, sizeof(unsigned long));
+  return crc32((unsigned char *)&cookie, sizeof(unsigned long));
 }
 
 void *malloc(size_t size) {

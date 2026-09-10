@@ -15,16 +15,16 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   }
 
   if (encrypt)
-    fields->crc32 = crc32((char *)&fields->ulen, sizeof(struct fields) - 4);
+    fields->crc32 = crc32((unsigned char *)&fields->ulen, sizeof(struct fields) - 4);
 
-  unsigned char *dest;
-  unsigned char *src;
+  char *dest;
+  char *src;
   if (!encrypt) {
-    dest = (unsigned char *)fields;
-    src = (unsigned char *)&entry->fields;
+    dest = (char *)fields;
+    src = (char *)&entry->fields;
   } else {
-    dest = (unsigned char *)&entry->fields;
-    src = (unsigned char *)fields;
+    dest = (char *)&entry->fields;
+    src = (char *)fields;
   }
 
   if (password_len) {
@@ -35,7 +35,7 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   }
 
   if (!encrypt) {
-    u32 sig = crc32((char *)&fields->ulen, sizeof(struct fields) - 4);
+    u32 sig = crc32((unsigned char *)&fields->ulen, sizeof(struct fields) - 4);
     if (fields->crc32 != sig)
       return -1;
   }

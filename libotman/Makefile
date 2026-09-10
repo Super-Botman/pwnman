@@ -2,9 +2,7 @@ NAME = libotman.a
 
 CC = gcc
 CPPFLAGS = -Iinclude -MMD -MP
-# CFLAGS = -Wall -Wextra -Werror -ffreestanding -fno-builtin
-CFLAGS = -Wall -Wextra -ffreestanding -fno-builtin \
--fno-stack-protector -fno-pie
+CFLAGS = -Wall -Wextra -Werror -ffreestanding -fno-builtin
 
 AR = ar
 ARFLAGS = rcs

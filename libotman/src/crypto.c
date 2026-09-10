@@ -5,8 +5,8 @@
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 unsigned int crc32(const unsigned char *message, unsigned int len) {
-   int i, j;
-   unsigned int byte, crc, mask;
+  unsigned int i, byte, crc, mask;
+  int j;
 
    i = 0;
    crc = 0xFFFFFFFF;
