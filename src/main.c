@@ -19,18 +19,18 @@ void help(struct db *_, char *__) {
 }
 
 struct command commands[] = {
-    {"help", "help: show this help", help},
-    {"open", "open <file>: open the db specified by file", opendb},
-    {"create", "create <file>: create a new db called file", createdb},
-    {"close", "close: save and close the actual db", closedb},
-    {"save", "save: save the actual db", savedb},
-    {"list", "list: list all the entries of a db", list},
-    {"search", "search <title>: search for an element by title", search},
-    {"show", "show <idx>: show the password of one entry", show},
-    {"delete", "delete <idx>: delete one entry", delete},
-    {"edit", "edit <idx>: edit one entry", edit},
-    {"new", "new: create a new entry", new},
-    {"exit", "exit: exit without saving", exitdb},
+    {"help", BOLD BLUE"help:"RESET" show this help", help},
+    {"open", BOLD BLUE"open <file>:"RESET" open the db specified by file", opendb},
+    {"create", BOLD BLUE"create <file>:"RESET" create a new db called file", createdb},
+    {"close", BOLD BLUE"close:" RESET" save and close the actual db", closedb},
+    {"save", BOLD BLUE"save:"RESET" save the actual db", savedb},
+    {"list", BOLD BLUE"list:"RESET" list all the entries of a db", list},
+    {"search", BOLD BLUE"search <title>:" RESET"search for an element by title", search},
+    {"show", BOLD BLUE"show <idx>:" RESET"show the password of one entry", show},
+    {"delete", BOLD BLUE"delete <idx>:"RESET" delete one entry", delete},
+    {"edit", BOLD BLUE"edit <idx>:"RESET" edit one entry", edit},
+    {"new", BOLD BLUE"new:"RESET" create a new entry", new},
+    {"exit", BOLD BLUE"exit:"RESET" exit without saving", exitdb},
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 

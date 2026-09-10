@@ -11,7 +11,7 @@ void edit(struct db *db, char *arg) {
 
   struct fields new_fields;
   if (crypt(entry, &new_fields, 0) < 0) {
-    puts("invalid password");
+    puts(RED"invalid password"RESET);
     return;
   }
 
@@ -38,21 +38,21 @@ void edit(struct db *db, char *arg) {
       memset(&title[0], 0, sizeof(title));
       memcpy(&title[0], line + 6, len - 6);
       title_len = len - 6;
-      puts("success");
+      puts(BOLD GREEN"success"RESET);
 
     } else if (strncmp(line, "username ", 9) == 0) {
       len -= 9;
       memcpy(new_fields.username, line + 9, len);
       new_fields.ulen = len;
       getrandom(new_fields.username + len, 64 - len);
-      puts("success");
+      puts(BOLD GREEN"success"RESET);
 
     } else if (strncmp(line, "password ", 9) == 0) {
       len -= 9;
       memcpy(new_fields.password, line + 9, len);
       new_fields.plen = len;
       getrandom(new_fields.password + len, 64 - len);
-      puts("success");
+      puts(BOLD GREEN"success"RESET);
 
     } else if (strcmp(line, "save") == 0) {
       memcpy(entry->title, &title[0], title_len);
@@ -67,7 +67,7 @@ void edit(struct db *db, char *arg) {
       return;
 
     } else {
-      puts("unknown command");
+      puts(RED"unknown command"RESET);
     }
 
     free(line);

@@ -19,7 +19,7 @@ void new(struct db *db, char *_) {
   if (!master_passwd && db->count > 0) {
     struct fields fields;
     if (crypt((struct entry *)db->entries, &fields, 0) < 0) {
-      puts("invalid password");
+      puts(RED"invalid password"RESET);
       return;
     }
   }
