@@ -1,7 +1,7 @@
 #include "pwnman.h"
 
 void search(struct db *db, char *to_find) {
-  if (is_database_empty(db) || !has_database(db) && !has_arguments(to_find)) {
+  if (is_database_empty(db) || !has_database(db) || !has_arguments(to_find)) {
       return; 
     }
 

@@ -70,6 +70,9 @@ void new(struct db *db, char *_);
 void search(struct db *db, char *arg);
 
 // ui
+#define TITLE_MAX 64
+#define ID_WIDTH 4
+
 void print_separator(int len);
 void print_pad_num(int num, int width);
 void print_table(int col, ...);
@@ -82,6 +85,7 @@ void get_title(struct entry *entry, char *title);
 void get_user(struct fields *fields, char *user);
 void get_pass(struct fields *fields, char *pass);
 
+// checker
 bool has_database(struct db *db);
 bool has_arguments(char *arg);
 bool is_right_index(struct db *db, char *arg, size_t *idx);

@@ -1,8 +1,5 @@
 #include "pwnman.h"
 
-#define TITLE_MAX 64
-#define ID_WIDTH 4
-
 void list(struct db *db, char *_) {
   (void)_;
   if (is_database_empty(db))
