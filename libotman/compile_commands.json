@@ -1,0 +1,97 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/crypto.o",
+      "src/crypto.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c/libotman",
+    "file": "/home/botman/Documents/oteria/c/libotman/src/crypto.c",
+    "output": "/home/botman/Documents/oteria/c/libotman/build/crypto.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/io.o",
+      "src/io.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c/libotman",
+    "file": "/home/botman/Documents/oteria/c/libotman/src/io.c",
+    "output": "/home/botman/Documents/oteria/c/libotman/build/io.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/malloc.o",
+      "src/malloc.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c/libotman",
+    "file": "/home/botman/Documents/oteria/c/libotman/src/malloc.c",
+    "output": "/home/botman/Documents/oteria/c/libotman/build/malloc.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/string.o",
+      "src/string.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c/libotman",
+    "file": "/home/botman/Documents/oteria/c/libotman/src/string.c",
+    "output": "/home/botman/Documents/oteria/c/libotman/build/string.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Wall",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/utils.o",
+      "src/utils.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c/libotman",
+    "file": "/home/botman/Documents/oteria/c/libotman/src/utils.c",
+    "output": "/home/botman/Documents/oteria/c/libotman/build/utils.o"
+  }
+]

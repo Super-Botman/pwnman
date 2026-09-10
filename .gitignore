@@ -1,5 +1,5 @@
 build
 .cache
 libotman.a
-pwman
+pwnman
 test.db

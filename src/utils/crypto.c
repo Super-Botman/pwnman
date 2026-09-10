@@ -2,18 +2,20 @@
 
 int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   char *key = master_passwd;
+  size_t password_len = 0;
   if (!key) {
     printf("Master password: ");
     echo_off();
-    key = getline();
+    size_t n;
+    password_len = getline(&key, &n);
     echo_on();
     puts("");
+  } else {
+    password_len = strlen(key);
   }
 
   if (encrypt)
     fields->crc32 = crc32((char *)&fields->ulen, sizeof(struct fields) - 4);
-
-  size_t password_len = strlen(key);
 
   unsigned char *dest;
   unsigned char *src;
@@ -40,14 +42,14 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
 
   if (!master_passwd) {
     printf("Keep password in memory? [Y/n]: ");
-    char *confirm = getline();
-    if (strcmp(confirm, "n") == 0) {
+    int c = getchar();
+    while (c != '\n' && getchar() != '\n') { }
+    if (c == 'n') {
       memset(key, 0, password_len);
       free(key);
     } else {
       master_passwd = key;
     }
-    free(confirm);
   }
   return 0;
 }

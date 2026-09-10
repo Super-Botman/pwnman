@@ -70,12 +70,12 @@ void search(struct db *db, char *to_find) {
     distances[i].idx = i;
     distances[i].value = levenshtein(title, to_find);
   }
+  sort(distances, db->count);
 
   const int width = ID_WIDTH + TITLE_MAX + 4;
   print_separator(width);
   puts("   id | title");
   print_separator(width);
-  sort(distances, db->count);
   size_t limit = db->count < 4 ? db->count : 4;
   for (size_t i = 0; i < limit; i++) {
     struct entry *entry = &entries[distances[i].idx];

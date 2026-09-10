@@ -2,12 +2,12 @@
 
 void edit(struct db *db, char *arg) {
   size_t idx;
-  if (is_database_empty(db) || !has_arguments(arg) || !is_right_index(db, arg, &idx)) {
+  if (!has_database(db) || is_database_empty(db) || !has_arguments(arg) ||
+      !is_right_index(db, arg, &idx)) {
     return;
   }
 
-  struct entry *entry =
-      (struct entry *)(db->entries + (sizeof(struct entry) * idx));
+  struct entry *entry = (struct entry *)db->entries + idx;
 
   struct fields new_fields;
   if (crypt(entry, &new_fields, 0) < 0) {
@@ -22,8 +22,9 @@ void edit(struct db *db, char *arg) {
   while (1) {
     printf("[%s ~ %s]> ", db->path, title);
 
-    char *line = getline();
-    size_t len = strlen(line);
+    char *line;
+    size_t len;
+    getline(&line, &len);
 
     if (strcmp(line, "help") == 0) {
       puts("Edit mode");

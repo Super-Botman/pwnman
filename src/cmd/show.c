@@ -1,17 +1,16 @@
 #include "pwnman.h"
 
 void show(struct db *db, char *arg) {
-
   size_t idx;
-  if (is_database_empty(db) || !has_arguments(arg) || !is_right_index(db, arg, &idx)) {
+  if (!has_database(db) || is_database_empty(db) || !has_arguments(arg) ||
+      !is_right_index(db, arg, &idx)) {
     return;
   }
 
-  struct entry *entry =
-      (struct entry *)(db->entries + (sizeof(struct entry) * idx));
+  struct entry *entry = (struct entry *)db->entries + idx;
 
   struct fields fields;
-  memset((char*)&fields, 0, sizeof(struct fields));
+  memset((char *)&fields, 0, sizeof(struct fields));
   if (crypt(entry, &fields, 0) < 0) {
     puts("invalid entry or password");
     return;

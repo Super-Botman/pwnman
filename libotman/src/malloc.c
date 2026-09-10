@@ -232,6 +232,8 @@ void *realloc(void *ptr, size_t size) {
   void *ret = ptr;
   size = align(size);
 
+  if(!ptr) return malloc(size);
+
   struct chunk *chk = ptr2chk(ptr);
   size_t chk_size = getsize(chk);
 

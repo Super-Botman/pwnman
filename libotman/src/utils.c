@@ -123,14 +123,14 @@ size_t lseek(int fd, size_t offset, int whence){
 }
 
 void *memcpy(char *dest, char *src, size_t n) {
-  for (int i = 0; i < n; i++)
+  for (size_t i = 0; i < n; i++)
     dest[i] = src[i];
   return dest;
 }
 
 void *memset(char *src, int c, size_t n) {
-  for (int i = 0; i < n; i++)
-    src[i] = 0;
+  for (size_t i = 0; i < n; i++)
+    src[i] = c;
   return src;
 }
 

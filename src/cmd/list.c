@@ -2,7 +2,8 @@
 
 void list(struct db *db, char *_) {
   (void)_;
-  if (is_database_empty(db))
+
+  if (!has_database(db) || is_database_empty(db))
     return;
 
   const int width = ID_WIDTH + TITLE_MAX + 4;

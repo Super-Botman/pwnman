@@ -26,7 +26,7 @@ bool has_arguments(char *arg) {
 
 bool is_right_index(struct db *db, char *arg, size_t *idx) {
   *idx = atoi(arg);
-  if (*idx >= db->count) {
+  if (*idx > db->count) {
     puts("invalid index");
     return FALSE;
   }

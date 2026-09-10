@@ -2,10 +2,8 @@
 
 void savedb(struct db *db, char *_) {
   (void)_;
-  if (!db->entries) {
-    puts("db not initialized");
+  if (!has_database(db))
     return;
-  }
 
   int tmp = open(".tmp.db", O_WRONLY | O_CREAT | O_EXCL, 0644);
   if (tmp < 0) {

@@ -44,6 +44,7 @@ int main(int argc, char *argv[], char *envp[]) {
   memset((char *)&db, 0, sizeof(struct db));
 
   char *line = 0;
+  size_t len = 0;
 
   while (1) {
     if (!db.path)
@@ -53,7 +54,7 @@ int main(int argc, char *argv[], char *envp[]) {
     else
       printf("[%s]> ", db.path);
 
-    line = getline();
+    getline(&line, &len);
     for (size_t i = 0; i < num_commands; i++) {
       struct command c = commands[i];
       size_t cmd_len = strlen(c.command);
@@ -70,6 +71,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
   end:
     free(line);
+    line = 0;
   }
 
   puts("bye");

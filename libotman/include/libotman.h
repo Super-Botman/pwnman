@@ -34,10 +34,14 @@ typedef long long ssize_t;
 #define O_NOATIME 01000000   /* Hex: 0x40000 */
 #define O_CLOEXEC 02000000   /* Hex: 0x80000 */
 
+#define BUFF_SIZE 256
+
 // io
 ssize_t write(int fd, char *buf, long count);
 ssize_t read(int fd, char *buf, long count);
-char *getline();
+ssize_t getline(char **lineptr, size_t *n);
+ssize_t readline(char *buf, size_t n);
+char getchar();
 int putc(char c);
 int puts(const char *str);
 int put(const char *str);

@@ -16,7 +16,6 @@ void createdb(struct db *db, char *path) {
   }
 
   char header[17] = "B0T\0\0\0\0\0\0\0\0\0\0\0\0\0";
-  // char header[16] = "B0T\0\0\0\0\0\0\0\0\0\0\0\0\0";
   if (write(fd, &header[0], 16) != 16) {
     puts("failed to write header");
     return;

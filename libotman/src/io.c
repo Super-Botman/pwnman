@@ -26,18 +26,66 @@ ssize_t read(int fd, char *buf, long count) {
   return ret;
 }
 
-char *getline() {
-  char *buf = malloc(256);
-  int n = 0;
-  while (1) {
-    n = read(0, buf, 256);
-    if (n>0 && buf[n - 1] == '\n')
-      break;
-    buf = realloc(buf, 256);
-    buf += 256;
+char getchar() {
+  char chr;
+  read(0, &chr, 1);
+  return chr;
+}
+
+ssize_t readline(char *buf, size_t n) {
+  if (!buf || n < 2) {
+    return -1;
   }
-  buf[n - 1] = '\0';
-  return buf;
+
+  int len = read(0, buf, (int)n);
+  if(len < 0)
+    return -1;
+
+  if (buf[len - 1] == '\n') {
+    buf[--len] = '\0';
+    return (ssize_t)len;
+  }
+
+  while (buf[len] != '\n' && getchar() != '\n'){}
+
+  return (ssize_t)len;
+}
+
+ssize_t getline(char **lineptr, size_t *n) {
+  if (!lineptr || !n) {
+    return -1;
+  }
+  if (*n == 0)
+    *lineptr = 0;
+
+  char *buf = *lineptr;
+  size_t cap = buf ? *n : 0;
+  size_t used = 0;
+
+  for (;;) {
+    if (used + 1 >= cap) {
+      size_t newcap = cap ? cap * 2 : 128;
+      char *tmp = realloc(buf, newcap);
+      buf = tmp;
+      cap = newcap;
+    }
+
+    ssize_t r = read(0, buf + used, cap - used - 1);
+    if (r < 0) {
+      return -1;
+    }
+    if (r == 0)
+      break;
+
+    used += (size_t)r;
+    if (buf[used - 1] == '\n')
+      break;
+  }
+
+  buf[used - 1] = '\0';
+  *lineptr = buf;
+  *n = cap;
+  return (ssize_t)used-1;
 }
 
 int putc(char c) { return write(1, &c, 1); }

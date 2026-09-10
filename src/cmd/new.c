@@ -1,3 +1,4 @@
+#include "include/libotman.h"
 #include "pwnman.h"
 
 void new(struct db *db, char *_) {
@@ -18,39 +19,25 @@ void new(struct db *db, char *_) {
   char *file_content = db->entries - 16;
   db->entries = realloc(file_content, new_size + 16) + 16;
 
-  struct entry *new_entry =
-      (struct entry *)(db->entries + new_size - sizeof(struct entry));
+  struct entry *new_entry = (struct entry *)db->entries + db->count - 1;
   memset((char *)new_entry, 0, sizeof(struct entry));
 
   printf("Title (max 64): ");
-  size_t len = read(0, new_entry->title, 64);
-  if (new_entry->title[len - 1] == '\n') {
-    new_entry->title[len - 1] = '\0';
-    len -= 1;
-  }
+  ssize_t len = readline(new_entry->title, sizeof new_entry->title);
   new_entry->tlen = len;
 
   struct fields *new_fields = &new_entry->fields;
 
   printf("Username (max 64): ");
-  len = read(0, new_fields->username, 64);
-  if (len > 0 && new_fields->username[len - 1] == '\n') {
-    len -= 1;
-  }
-  new_fields->username[len] = '\0';
-  new_fields->ulen = len;
+  len = readline(new_fields->username, sizeof new_fields->username);
   getrandom(new_fields->username + len + 1, 64 - len - 1);
+  new_fields->ulen = len;
 
   printf("Password (max 64): ");
-  len = read(0, new_fields->password, 64);
-  if (len > 0 && new_fields->password[len - 1] == '\n') {
-    len -= 1;
-  }
-  new_fields->password[len] = '\0';
-  new_fields->plen = len;
+  len = readline(new_fields->password, sizeof new_fields->password);
   getrandom(new_fields->password + len + 1, 64 - len - 1);
+  new_fields->plen = len;
 
   crypt(new_entry, new_fields, 1);
   db->edited |= 1;
 }
-
