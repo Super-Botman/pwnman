@@ -28,10 +28,10 @@ SRC = main.c \
     cmd/new.c \
     cmd/open.c \
     cmd/save.c \
-		cmd/search.c \
+	cmd/search.c \
     cmd/show.c \
     ui/draw.c \
-		utils/checker.c \
+	utils/checker.c \
     utils/crypto.c \
     utils/getter.c
 

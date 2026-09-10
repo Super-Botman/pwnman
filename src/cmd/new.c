@@ -1,7 +1,6 @@
 #include "pwnman.h"
 
 void new(struct db *db, char *_) {
-
   (void)_;
   if (!has_database(db))
     return;

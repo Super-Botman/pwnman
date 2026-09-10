@@ -37,7 +37,7 @@ void *brk(void *brk) {
 #define getsize(chk) (chk->size & ~0xf)
 #define align(size) ((size + 0xf) & ~0xf)
 #define isfree(chk) (chk->size & FREE)
-#define inheap(chk) ((void *)chk >= base && (void *)chk <= top)
+#define inheap(chk) ((void *)chk >= base && (void *)chk < top)
 #define checksig(chk) (chk->sig == sig(chk))
 
 long sig(struct chunk *chk) {
