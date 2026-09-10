@@ -1,30 +1,74 @@
-.PHONY: all build link clean fclean
+NAME = pwman
+LIB = libotman/libotman.a
 
-CFLAGS = -I./lib -Wno-builtin-declaration-mismatch -c -fno-stack-protector -nostdlib -MMD -MP
+CC = gcc
+CPPFLAGS = -Iinclude -Ilibotman -MMD -MP
+CFLAGS = -Wextra -ffreestanding -fno-builtin \
+-fno-stack-protector -fno-pie
 
-LIB_SRCS = $(wildcard ./lib/*.c)
-LIB_OBJS = $(patsubst ./lib/%.c,./build/%.o,$(LIB_SRCS))
+AS = nasm
+ASFLAGS = -f elf64
 
-all: link
+ifdef DEBUG
+CFLAGS += -g
+AFLAGS += -g -F dwarf
+endif
 
-builddir:
-	mkdir -p ./build
+LD = ld
+LDFLAGS = -e _start
 
-build: builddir ./src/entry.asm ./src/main.c ./build/libotman.a
-	nasm -f elf64 ./src/entry.asm -o ./build/entry.o
-	gcc $(CFLAGS) ./src/main.c -o ./build/main.o
+SRC_DIR = src
+SRC = main.c \
+    cmd/close.c \
+    cmd/create.c \
+    cmd/delete.c \
+    cmd/edit.c \
+    cmd/list.c \
+    cmd/new.c \
+    cmd/open.c \
+    cmd/save.c \
+    cmd/show.c \
+    ui/draw.c \
+    utils/getter.c \
+    utils/crypto.c
 
-./build/libotman.a: $(LIB_OBJS)
-	ar rcs $@ $^
+SRC_ASM = entry.asm
 
-./build/%.o: ./lib/%.c | builddir
-	gcc $(CFLAGS) $< -o $@
+SRC := $(addprefix $(SRC_DIR)/, $(SRC))
+SRC_ASM := $(addprefix $(SRC_DIR)/, $(SRC_ASM))
 
-link: build
-	ld -e _start -o ./build/main ./build/entry.o ./build/main.o -L./build -lotman
+OBJ_DIR = build
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+OBJ_ASM = $(patsubst %.asm, $(OBJ_DIR)/%.o, $(SRC_ASM))
 
-clean: 
-	rm -rf ./build/*.o
+DEP = $(OBJ:.o=.d)
 
-fclean:
-	rm -rf ./build/*
+.PHONY: all
+all: $(NAME)
+
+$(NAME): $(LIB) $(OBJ) $(OBJ_ASM)
+	$(LD) $(LDFLAGS) -o $@ $^
+
+$(LIB):
+	$(MAKE) -C libotman
+	
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.asm
+	mkdir -p $(dir $@)
+	$(AS) $(ASFLAGS) $< -o $@
+
+.PHONY: clean
+clean:
+	$(RM) -r $(OBJ_DIR)
+
+.PHONY: fclean
+fclean: clean
+	$(RM) $(NAME)
+
+.PHONY: re
+re: clean all
+
+-include $(DEP)
