@@ -39,7 +39,7 @@ void new(struct db *db, char *_) {
   }
   new_fields->username[len] = '\0';
   new_fields->ulen = len;
-  getrandom(new_fields->username + len + 1, 64 - len);
+  getrandom(new_fields->username + len + 1, 64 - len - 1);
 
   printf("Password (max 64): ");
   len = read(0, new_fields->password, 64);
@@ -48,7 +48,7 @@ void new(struct db *db, char *_) {
   }
   new_fields->password[len] = '\0';
   new_fields->plen = len;
-  getrandom(new_fields->password + len + 1, 64 - len);
+  getrandom(new_fields->password + len + 1, 64 - len - 1);
 
   crypt(new_entry, new_fields, 1);
   db->edited |= 1;

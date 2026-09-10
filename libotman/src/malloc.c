@@ -61,9 +61,9 @@ void *malloc(size_t size) {
   if (!freed) {
     struct chunk *chk = (struct chunk *)top;
     top = brk(chk2ptr((char *)top + size));
-
     chk->size = size;
     chk->sig = sig(chk);
+    chk->prev = 0;
     ret = chk2ptr(chk);
     goto ret;
   }
