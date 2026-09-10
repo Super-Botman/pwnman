@@ -31,8 +31,9 @@ SRC = main.c \
 		cmd/search.c \
     cmd/show.c \
     ui/draw.c \
-    utils/getter.c \
-    utils/crypto.c
+		utils/checker.c \
+    utils/crypto.c \
+    utils/getter.c
 
 SRC_ASM = entry.asm
 

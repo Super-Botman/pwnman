@@ -1,13 +1,8 @@
 #include "pwnman.h"
 
 void delete(struct db *db, char *arg) {
-  while (*arg == ' ')
-    arg++;
-  // int idx = atoi(arg);
-  size_t idx = atoi(arg);
-
-  if (idx >= db->count) {
-    puts("invalid index");
+  size_t idx;
+  if (is_database_empty(db) || !has_arguments(arg) || !is_right_index(db, arg, &idx)) {
     return;
   }
 

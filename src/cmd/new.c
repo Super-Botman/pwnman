@@ -1,7 +1,11 @@
 #include "pwnman.h"
 
 void new(struct db *db, char *_) {
+
   (void)_;
+  if (!has_database(db))
+    return;
+
   if (!master_passwd && db->count > 0) {
     struct fields fields;
     if (crypt((struct entry *)db->entries, &fields, 0) < 0) {

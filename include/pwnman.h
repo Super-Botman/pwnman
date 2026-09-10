@@ -25,6 +25,9 @@
 #define WHITE        "\033[37m"
 #define DEFAULT      "\033[39m"
 
+#define TRUE 1
+#define FALSE 0
+
 typedef unsigned int u32;
 typedef unsigned short u16;
 
@@ -78,5 +81,10 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt);
 void get_title(struct entry *entry, char *title);
 void get_user(struct fields *fields, char *user);
 void get_pass(struct fields *fields, char *pass);
+
+bool has_database(struct db *db);
+bool has_arguments(char *arg);
+bool is_right_index(struct db *db, char *arg, size_t *idx);
+bool is_database_empty(struct db *db);
 
 #endif

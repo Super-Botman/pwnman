@@ -54,7 +54,6 @@ int main(int argc, char *argv[], char *envp[]) {
       printf("[%s]> ", db.path);
 
     line = getline();
-
     for (size_t i = 0; i < num_commands; i++) {
       struct command c = commands[i];
       size_t cmd_len = strlen(c.command);
@@ -62,7 +61,9 @@ int main(int argc, char *argv[], char *envp[]) {
       if (strncmp(line, c.command, cmd_len) != 0)
         continue;
 
-      commands[i].func(&db, line + cmd_len);
+      char* arg = line + cmd_len;
+      while (*arg == ' ') arg++;
+      commands[i].func(&db, arg);
       goto end;
     }
     puts("unknown command");

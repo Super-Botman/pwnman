@@ -5,18 +5,15 @@
 
 void list(struct db *db, char *_) {
   (void)_;
-  if (db->count == 0) {
-    puts("no entry in db");
+  if (is_database_empty(db))
     return;
-  }
 
   const int width = ID_WIDTH + TITLE_MAX + 4;
-  struct entry *entry = (struct entry *)db->entries;
-
   print_separator(width);
   puts("   id | title");
   print_separator(width);
 
+  struct entry *entry = (struct entry *)db->entries;
   for (size_t i = 0; i < db->count; i++, entry++) {
     char title[TITLE_MAX + 1];
 
