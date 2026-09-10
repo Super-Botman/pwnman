@@ -2,7 +2,7 @@
 
 void createdb(struct db *db, char *path) {
   if (db->entries) {
-    puts("db already opened, close it before opening another");
+    puts(RED"db already opened, close it before opening another"RESET);
     return;
   }
 
@@ -11,11 +11,12 @@ void createdb(struct db *db, char *path) {
 
   int fd = open(path, O_WRONLY | O_CREAT | O_EXCL, 0644);
   if (fd < 0) {
-    puts("failed to create the new db");
+    puts(RED"failed to create the new db"RESET);
     return;
   }
 
   char header[17] = "B0T\0\0\0\0\0\0\0\0\0\0\0\0\0";
+  // char header[16] = "B0T\0\0\0\0\0\0\0\0\0\0\0\0\0";
   if (write(fd, &header[0], 16) != 16) {
     puts("failed to write header");
     return;

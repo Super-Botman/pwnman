@@ -35,7 +35,16 @@ struct command commands[] = {
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 
 int main(int argc, char *argv[], char *envp[]) {
-  puts("PASSWORD MANAGER 1.0");
+  puts(BOLD MAGENTA
+    "$$$$$$$\\  $$\\      $$\\ $$\\   $$\\ $$\\      $$\\  $$$$$$\\  $$\\   $$\\ \n"
+    "$$  __$$\\ $$ | $\\  $$ |$$$\\  $$ |$$$\\    $$$ |$$  __$$\\ $$$\\  $$ |\n"
+    "$$ |  $$ |$$ |$$$\\ $$ |$$$$\\ $$ |$$$$\\  $$$$ |$$ /  $$ |$$$$\\ $$ |\n"
+    "$$$$$$$  |$$ $$ $$\\$$ |$$ $$\\$$ |$$\\$$\\$$ $$ |$$$$$$$$ |$$ $$\\$$ |\n"
+    "$$  ____/ $$$$  _$$$$ |$$ \\$$$$ |$$ \\$$$  $$ |$$  __$$ |$$ \\$$$$ |\n"
+    "$$ |      $$$  / \\$$$ |$$ |\\$$$ |$$ |\\$  /$$ |$$ |  $$ |$$ |\\$$$ |\n"
+    "$$ |      $$  /   \\$$ |$$ | \\$$ |$$ | \\_/ $$ |$$ |  $$ |$$ | \\$$ |\n"
+    "\\__|      \\__/     \\__|\\__|  \\__|\\__|     \\__|\\__|  \\__|\\__|  \\__|\n\n"
+    BOLD BLUE"                           [ 0.1.0 ]"RESET);
 
   (void)argc;
   (void)argv;
@@ -48,11 +57,11 @@ int main(int argc, char *argv[], char *envp[]) {
 
   while (1) {
     if (!db.path)
-      printf("> ");
+      printf(BLUE"> " RESET);
     else if (db.edited)
-      printf("[*%s]> ", db.path);
+      printf(BOLD BLUE "[*%s]> " RESET, db.path);
     else
-      printf("[%s]> ", db.path);
+      printf(BLUE "[%s]> " RESET, db.path);
 
     getline(&line, &len);
     for (size_t i = 0; i < num_commands; i++) {
@@ -67,7 +76,7 @@ int main(int argc, char *argv[], char *envp[]) {
       commands[i].func(&db, arg);
       goto end;
     }
-    puts("unknown command");
+    puts(RED"unknown command"RESET);
 
   end:
     free(line);

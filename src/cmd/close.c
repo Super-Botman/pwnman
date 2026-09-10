@@ -3,7 +3,7 @@
 void closedb(struct db *db, char *_) {
   (void)_;
   if (!db->entries) {
-    puts("db not initialized");
+    puts(RED"db not initialized"RESET);
     return;
   }
 

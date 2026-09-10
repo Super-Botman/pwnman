@@ -4,8 +4,6 @@ LIB = libotman/libotman.a
 CC = gcc
 CPPFLAGS = -Iinclude -Ilibotman -MMD -MP
 CFLAGS = -Wall -Wextra -Werror -ffreestanding -fno-builtin
-# CFLAGS = -Wall -Wextra -ffreestanding -fno-builtin \
--fno-stack-protector -fno-pie
 
 AS = nasm
 ASFLAGS = -f elf64
