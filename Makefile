@@ -1,4 +1,4 @@
-NAME = pwman
+NAME = pwnman
 LIB = libotman/libotman.a
 
 CC = gcc
