@@ -8,7 +8,7 @@ void show(struct db *db, char *arg) {
 
   while (*arg == ' ')
     arg++;
-  int idx = atoi(arg);
+  size_t idx = atoi(arg);
 
   if (idx >= db->count) {
     puts("invalid index");

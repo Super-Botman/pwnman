@@ -39,7 +39,6 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   }
 
   if (!master_passwd) {
-    char c[2];
     printf("Save password [Y/n]: ");
     char *confirm = getline();
     if (strcmp(confirm, "n") == 0) {

@@ -10,9 +10,10 @@ char *master_passwd = 0;
 extern struct command commands[];
 extern size_t num_commands;
 
-void exitdb(struct db *_, char *__) { exit(0); }
+void exitdb(struct db *_, char *__) { (void)_; (void)__; exit(0); }
 
 void help(struct db *_, char *__) {
+  (void)_; (void)__;
   for (size_t i = 0; i < num_commands; i++)
     puts(commands[i].usage);
 }
@@ -29,12 +30,16 @@ struct command commands[] = {
     {"edit", "edit <idx>: edit one entry", edit},
     {"new", "new: create a new entry", new},
     {"exit", "exit: exit without saving", exitdb},
+    {"search", "search: search for an element", search}
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 
 int main(int argc, char *argv[], char *envp[]) {
   puts("PASSWORD MANAGER 1.0");
 
+  (void)argc;
+  (void)argv;
+  (void)envp;
   struct db db;
   memset((char *)&db, 0, sizeof(struct db));
 

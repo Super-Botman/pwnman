@@ -1,9 +1,29 @@
 #ifndef PWNMAN_H
 #define PWNMAN_H
 
-#include "libotman.h"
+#include "include/libotman.h"
 #include "ioctls.h"
 #include "termbits.h"
+
+#define RESET        "\033[0m"
+#define BOLD         "\033[1m"
+#define DIM          "\033[2m"
+#define ITALIC       "\033[3m"
+#define UNDERLINE    "\033[4m"
+#define BLINK        "\033[5m"
+#define BLINK_FAST   "\033[6m"
+#define REVERSE      "\033[7m"
+#define HIDDEN       "\033[8m"
+#define STRIKE       "\033[9m"
+#define BLACK        "\033[30m"
+#define RED          "\033[31m"
+#define GREEN        "\033[32m"
+#define YELLOW       "\033[33m"
+#define BLUE         "\033[34m"
+#define MAGENTA      "\033[35m"
+#define CYAN         "\033[36m"
+#define WHITE        "\033[37m"
+#define DEFAULT      "\033[39m"
 
 typedef unsigned int u32;
 typedef unsigned short u16;
@@ -44,6 +64,7 @@ void show(struct db *db, char *arg);
 void delete(struct db *db, char *arg);
 void edit(struct db *db, char *arg);
 void new(struct db *db, char *_);
+void search(struct db *db, char *arg);
 
 // ui
 void print_separator(int len);

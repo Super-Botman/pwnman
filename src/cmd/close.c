@@ -1,6 +1,7 @@
 #include "pwnman.h"
 
 void closedb(struct db *db, char *_) {
+  (void)_;
   if (!db->entries) {
     puts("db not initialized");
     return;

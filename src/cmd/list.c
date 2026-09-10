@@ -4,6 +4,7 @@
 #define ID_WIDTH 4
 
 void list(struct db *db, char *_) {
+  (void)_;
   if (db->count == 0) {
     puts("no entry in db");
     return;

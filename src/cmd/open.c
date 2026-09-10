@@ -15,7 +15,7 @@ void opendb(struct db *db, char *path) {
     return;
   }
 
-  size_t file_size = lseek(fd, 0, SEEK_END);
+  ssize_t file_size = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
   char *file_content = malloc(file_size);
   if (read(fd, file_content, file_size) != file_size) {

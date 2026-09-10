@@ -1,19 +1,19 @@
 NAME = libotman.a
 
 CC = gcc
-CPPFLAGS = -MMD -MP
-CFLAGS = -Wextra -ffreestanding -fno-builtin \
+CPPFLAGS = -Iinclude -MMD -MP
+# CFLAGS = -Wall -Wextra -Werror -ffreestanding -fno-builtin
+CFLAGS = -Wall -Wextra -ffreestanding -fno-builtin \
 -fno-stack-protector -fno-pie
 
 AR = ar
-ASFLAGS = rcs
+ARFLAGS = rcs
 
 ifdef DEBUG
-CFLAGS += -g
-AFLAGS += -g -F dwarf
+	CFLAGS += -g
 endif
 
-SRC_DIR = .
+SRC_DIR = src
 SRC = crypto.c \
       io.c \
       malloc.c \

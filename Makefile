@@ -3,14 +3,15 @@ LIB = libotman/libotman.a
 
 CC = gcc
 CPPFLAGS = -Iinclude -Ilibotman -MMD -MP
-CFLAGS = -Wextra -ffreestanding -fno-builtin \
+# CFLAGS = -Wall -Wextra -Werror -ffreestanding -fno-builtin
+CFLAGS = -Wall -Wextra -ffreestanding -fno-builtin \
 -fno-stack-protector -fno-pie
 
 AS = nasm
 ASFLAGS = -f elf64
 
 ifdef DEBUG
-CFLAGS += -g
+	CFLAGS += -g
 	ASFLAGS += -g -F dwarf
 endif
 
@@ -27,6 +28,7 @@ SRC = main.c \
     cmd/new.c \
     cmd/open.c \
     cmd/save.c \
+		cmd/search.c \
     cmd/show.c \
     ui/draw.c \
     utils/getter.c \
@@ -67,6 +69,7 @@ clean:
 .PHONY: fclean
 fclean: clean
 	$(RM) $(NAME)
+	$(MAKE) -C libotman fclean
 
 .PHONY: re
 re: clean all
