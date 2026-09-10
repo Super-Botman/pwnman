@@ -46,8 +46,8 @@ void edit(struct db *db, char *arg);
 void new(struct db *db, char *_);
 
 // ui
-static void print_separator(int len);
-static void print_pad_num(int num, int width);
+void print_separator(int len);
+void print_pad_num(int num, int width);
 void print_table(int col, ...);
 void echo_off();
 void echo_on();

@@ -16,13 +16,13 @@ void echo_on() {
   (void)ioctl(0, (int)TCSETS, (long)&state);
 }
 
-static void print_separator(int len) {
+void print_separator(int len) {
   for (int i = 0; i < len; i++)
     putc('-');
   putc('\n');
 }
 
-static void print_pad_num(int num, int width) {
+void print_pad_num(int num, int width) {
   char buf[width + 1];
   int len = itoa(num, buf, 10);
 

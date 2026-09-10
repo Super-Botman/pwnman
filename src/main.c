@@ -6,7 +6,7 @@ struct command {
   void (*func)(struct db *, char *arg);
 };
 
-extern char *master_passwd;
+char *master_passwd = 0;
 extern struct command commands[];
 extern size_t num_commands;
 

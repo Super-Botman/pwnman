@@ -11,7 +11,7 @@ ASFLAGS = -f elf64
 
 ifdef DEBUG
 CFLAGS += -g
-AFLAGS += -g -F dwarf
+	ASFLAGS += -g -F dwarf
 endif
 
 LD = ld
@@ -46,7 +46,7 @@ DEP = $(OBJ:.o=.d)
 .PHONY: all
 all: $(NAME)
 
-$(NAME): $(LIB) $(OBJ) $(OBJ_ASM)
+$(NAME): $(OBJ) $(OBJ_ASM) $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $^
 
 $(LIB):
