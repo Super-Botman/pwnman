@@ -2,7 +2,7 @@
 
 bool is_database_empty(struct db *db) {
   if (db->count == 0) {
-    puts("no entry in db");
+    puts(RED"no entry in db"RESET);
     return TRUE;
   }
   return FALSE;
@@ -10,7 +10,7 @@ bool is_database_empty(struct db *db) {
 
 bool has_database(struct db *db) {
     if (!db->entries) {
-      puts("db not initialized");
+      puts(RED"db not initialized"RESET);
       return FALSE;
     }
     return TRUE;
@@ -18,7 +18,7 @@ bool has_database(struct db *db) {
 
 bool has_arguments(char *arg) {
     if (!arg || strlen(arg) == 0) {
-        printf("no arguments given\n");
+        printf(RED"no arguments given\n"RESET);
         return FALSE;
     }
     return TRUE;
@@ -26,8 +26,8 @@ bool has_arguments(char *arg) {
 
 bool is_right_index(struct db *db, char *arg, size_t *idx) {
   *idx = atoi(arg);
-  if (*idx > db->count) {
-    puts("invalid index");
+  if (*idx >= db->count) {
+    puts(RED"invalid index"RESET);
     return FALSE;
   }
   return TRUE;

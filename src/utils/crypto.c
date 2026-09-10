@@ -4,7 +4,7 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   char *key = master_passwd;
   size_t password_len = 0;
   if (!key) {
-    printf("Master password: ");
+    printf(BOLD MAGENTA"Master password: "RESET);
     echo_off();
     size_t n;
     password_len = getline(&key, &n);
@@ -41,7 +41,7 @@ int crypt(struct entry *entry, struct fields *fields, int encrypt) {
   }
 
   if (!master_passwd) {
-    printf("Keep password in memory? [Y/n]: ");
+    printf(BOLD WHITE"Keep password in memory? [Y/n]: "RESET);
     int c = getchar();
     while (c != '\n' && getchar() != '\n') { }
     if (c == 'n') {

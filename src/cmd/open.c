@@ -2,7 +2,7 @@
 
 void opendb(struct db *db, char *path) {
   if (db->entries) {
-    puts("db already opened, close it before opening another");
+    puts(RED"db already opened, close it before opening another"RESET);
     return;
   }
 
@@ -11,7 +11,7 @@ void opendb(struct db *db, char *path) {
 
   int fd = open(path, O_RDWR, 0);
   if (fd < 0) {
-    puts("error while opening the db");
+    puts(RED"error while opening the db"RESET);
     return;
   }
 
@@ -19,13 +19,13 @@ void opendb(struct db *db, char *path) {
   lseek(fd, 0, SEEK_SET);
   char *file_content = malloc(file_size);
   if (read(fd, file_content, file_size) != file_size) {
-    puts("error while reading the db");
+    puts(RED"error while reading the db"RESET);
     free(file_content);
     return;
   }
 
   if (strncmp(file_content, "B0T", 4) != 0) {
-    puts("invalid db");
+    puts(RED"invalid db"RESET);
     free(file_content);
     return;
   }

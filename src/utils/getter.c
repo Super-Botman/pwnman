@@ -3,7 +3,7 @@
 void get_title(struct entry *entry, char *title) {
   memset(title, 0, sizeof(entry->title));
   if (entry->tlen >= sizeof(entry->title)) {
-    puts("invalid entry");
+    puts(RED"invalid entry"RESET);
     return;
   }
   memcpy(&title[0], entry->title, entry->tlen);
@@ -11,7 +11,7 @@ void get_title(struct entry *entry, char *title) {
 
 void get_pass(struct fields *fields, char *pass) {
   if (fields->plen > sizeof(fields->password)) {
-    puts("invalid entry");
+    puts(RED"invalid entry"RESET);
     return;
   }
   memset(pass, 0, sizeof(fields->password));
@@ -20,7 +20,7 @@ void get_pass(struct fields *fields, char *pass) {
 
 void get_user(struct fields *fields, char *user) {
   if (fields->ulen > sizeof(fields->username)) {
-    puts("invalid entry");
+    puts(RED"invalid entry"RESET);
     return;
   }
   memset(user, 0, sizeof(fields->username));
