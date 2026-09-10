@@ -175,11 +175,11 @@ int itoa(int num, char *str, int base) {
   return 16 - i;
 }
 
-int atoi(char* str) {
-  int ret = 0;
-  for(int i = 0; i < 16; i++){
-    if (str[i] == '\0') break;
-    ret += (str[i]-'0') << (i*4);
-  }
-  return ret;
+int atoi(char *p) {
+    int k = 0;
+    while (*p) {
+        k = k*10 + (*p) - '0';
+        p++;
+     }
+     return k;
 }
