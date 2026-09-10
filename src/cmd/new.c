@@ -1,6 +1,16 @@
 #include "include/libotman.h"
 #include "pwnman.h"
 
+char randchar(void) {
+    unsigned char b;
+    while (1) {
+        getrandom(&b, 1);
+        if (b < 52) {
+            return (b < 26) ? 'a' + b : 'A' + (b - 26);
+        }
+    }
+}
+
 void new(struct db *db, char *_) {
   (void)_;
   if (!has_database(db))
@@ -33,8 +43,16 @@ void new(struct db *db, char *_) {
   getrandom(new_fields->username + len + 1, 64 - len - 1);
   new_fields->ulen = len;
 
+  puts("You can press enter to generate a random password");
   printf("Password (max 64): ");
   len = readline(new_fields->password, sizeof new_fields->password);
+  if (len == 0) {
+    for(int i = 0; i < 64; i++){
+      new_fields->password[i] = randchar();
+    }
+    len = 64;
+    printf("Password: %s\n", new_fields->password);
+  }
   getrandom(new_fields->password + len + 1, 64 - len - 1);
   new_fields->plen = len;
 
