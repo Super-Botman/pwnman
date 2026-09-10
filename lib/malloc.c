@@ -1,5 +1,16 @@
 #include "libotman.h"
 
+struct chunk {
+  long sig;
+  int prev;
+  int size;
+};
+
+struct meta {
+  void *fd;
+  void *bk;
+};
+
 void *base = 0;
 void *top = 0;
 
@@ -152,8 +163,7 @@ void free(void *ptr) {
   struct chunk *next_chk = (struct chunk *)((char *)ptr + chk_size);
   if (inheap(next_chk) && isfree(next_chk) && checksig(next_chk)) {
     size_t next_size = getsize(next_chk);
-    chk_size += next_size;
-    chk->size = chk_size | FREE;
+    chk_size += next_size + sizeof(struct chunk);
 
     struct meta *next_meta = chk2meta(next_chk);
     struct meta *n_fd = next_meta->fd;
@@ -181,9 +191,10 @@ void free(void *ptr) {
 
   struct chunk *prev_chk =
       (struct chunk *)((char *)chk - chk->prev - sizeof(struct chunk));
+
   if (prev_chk && inheap(prev_chk) && isfree(prev_chk) && checksig(prev_chk)) {
     size_t prev_size = getsize(prev_chk);
-    prev_size += chk_size;
+    prev_size += chk_size + sizeof(struct chunk);
     prev_chk->size = prev_size | FREE;
 
     chk->size = 0;
@@ -206,7 +217,7 @@ void free(void *ptr) {
     freed = meta;
   }
 
-  struct chunk *following_chk = (struct chunk *)((char *)ptr + chk_size);
+  struct chunk *following_chk = (struct chunk *)((char *)chk + chk_size + sizeof(struct chunk));
   if (inheap(following_chk)) {
     following_chk->prev = chk_size;
     following_chk->sig = sig(following_chk);

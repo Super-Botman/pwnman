@@ -71,17 +71,6 @@ int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, int n);
 
 // malloc
-struct chunk {
-  long sig;
-  int prev;
-  int size;
-};
-
-struct meta {
-  void *fd;
-  void *bk;
-};
-
 void free(void *ptr);
 void *malloc(size_t size);
 void *realloc(void *ptr, size_t size);

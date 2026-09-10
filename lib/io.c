@@ -31,7 +31,7 @@ char *getline() {
   int n = 0;
   while (1) {
     n = read(0, buf, 256);
-    if (buf[n - 1] == '\n')
+    if (n>0 && buf[n - 1] == '\n')
       break;
     buf = realloc(buf, 256);
     buf += 256;
