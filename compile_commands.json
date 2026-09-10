@@ -1,1 +1,249 @@
-[]
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/main.c",
+    "output": "/home/botman/Documents/oteria/c/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/close.o",
+      "src/cmd/close.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/close.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/close.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/create.o",
+      "src/cmd/create.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/create.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/create.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/delete.o",
+      "src/cmd/delete.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/delete.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/delete.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/edit.o",
+      "src/cmd/edit.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/edit.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/edit.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/list.o",
+      "src/cmd/list.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/list.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/list.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/new.o",
+      "src/cmd/new.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/new.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/new.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/open.o",
+      "src/cmd/open.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/open.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/open.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/save.o",
+      "src/cmd/save.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/save.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/save.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/cmd/show.o",
+      "src/cmd/show.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/cmd/show.c",
+    "output": "/home/botman/Documents/oteria/c/build/cmd/show.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/ui/draw.o",
+      "src/ui/draw.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/ui/draw.c",
+    "output": "/home/botman/Documents/oteria/c/build/ui/draw.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/utils/getter.o",
+      "src/utils/getter.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/utils/getter.c",
+    "output": "/home/botman/Documents/oteria/c/build/utils/getter.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-Ilibotman",
+      "-Wextra",
+      "-ffreestanding",
+      "-fno-builtin",
+      "-fno-stack-protector",
+      "-fno-pie",
+      "-c",
+      "-o",
+      "build/utils/crypto.o",
+      "src/utils/crypto.c"
+    ],
+    "directory": "/home/botman/Documents/oteria/c",
+    "file": "/home/botman/Documents/oteria/c/src/utils/crypto.c",
+    "output": "/home/botman/Documents/oteria/c/build/utils/crypto.o"
+  }
+]
