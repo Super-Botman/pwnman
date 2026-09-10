@@ -22,11 +22,11 @@ struct command commands[] = {
     {"help", BOLD BLUE"help:"RESET" show this help", help},
     {"open", BOLD BLUE"open <file>:"RESET" open the db specified by file", opendb},
     {"create", BOLD BLUE"create <file>:"RESET" create a new db called file", createdb},
-    {"close", BOLD BLUE"close:" RESET" save and close the actual db", closedb},
+    {"close", BOLD BLUE"close:"RESET" save and close the actual db", closedb},
     {"save", BOLD BLUE"save:"RESET" save the actual db", savedb},
     {"list", BOLD BLUE"list:"RESET" list all the entries of a db", list},
-    {"search", BOLD BLUE"search <title>:" RESET"search for an element by title", search},
-    {"show", BOLD BLUE"show <idx>:" RESET"show the password of one entry", show},
+    {"search", BOLD BLUE"search <title>:"RESET"search for an element by title", search},
+    {"show", BOLD BLUE"show <idx>:"RESET"show the password of one entry", show},
     {"delete", BOLD BLUE"delete <idx>:"RESET" delete one entry", delete},
     {"edit", BOLD BLUE"edit <idx>:"RESET" edit one entry", edit},
     {"new", BOLD BLUE"new:"RESET" create a new entry", new},
@@ -35,6 +35,10 @@ struct command commands[] = {
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
 
 int main(int argc, char *argv[], char *envp[]) {
+  (void)argc;
+  (void)argv;
+  (void)envp;
+
   puts(BOLD MAGENTA
     "$$$$$$$\\  $$\\      $$\\ $$\\   $$\\ $$\\      $$\\  $$$$$$\\  $$\\   $$\\ \n"
     "$$  __$$\\ $$ | $\\  $$ |$$$\\  $$ |$$$\\    $$$ |$$  __$$\\ $$$\\  $$ |\n"
@@ -46,9 +50,6 @@ int main(int argc, char *argv[], char *envp[]) {
     "\\__|      \\__/     \\__|\\__|  \\__|\\__|     \\__|\\__|  \\__|\\__|  \\__|\n\n"
     BOLD BLUE"                           [ 0.1.0 ]"RESET);
 
-  (void)argc;
-  (void)argv;
-  (void)envp;
   struct db db;
   memset((char *)&db, 0, sizeof(struct db));
 
