@@ -1,5 +1,9 @@
 NAME = pwnman
-LIB = libotman/libotman.a
+
+LIB_DIR = libotman
+LIB = libotman.a
+LIB := $(addprefix $(LIB_DIR)/, $(LIB))
+LIB_SRC = $(wildcard $(LIB_DIR)/src/*)
 
 CC = gcc
 CPPFLAGS = -Iinclude -Ilibotman -MMD -MP
@@ -50,7 +54,7 @@ all: $(NAME)
 $(NAME): $(OBJ) $(OBJ_ASM) $(LIB)
 	$(LD) $(LDFLAGS) -o $@ $^
 
-$(LIB):
+$(LIB): $(LIB_SRC)
 	$(MAKE) -C libotman
 	
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
