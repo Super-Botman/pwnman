@@ -11,7 +11,7 @@ char randchar(void) {
     }
 }
 
-void new(struct db *db, char *_) {
+void add(struct db *db, char *_) {
   (void)_;
   if (!has_database(db))
     return;

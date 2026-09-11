@@ -27,7 +27,7 @@ SRC = main.c \
     cmd/delete.c \
     cmd/edit.c \
     cmd/list.c \
-    cmd/new.c \
+    cmd/add.c \
     cmd/open.c \
     cmd/save.c \
 	cmd/search.c \

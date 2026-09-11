@@ -29,7 +29,7 @@ struct command commands[] = {
     {"show", BOLD BLUE"show <idx>:"RESET"show the password of one entry", show},
     {"delete", BOLD BLUE"delete <idx>:"RESET" delete one entry", delete},
     {"edit", BOLD BLUE"edit <idx>:"RESET" edit one entry", edit},
-    {"new", BOLD BLUE"new:"RESET" create a new entry", new},
+    {"add", BOLD BLUE"add:"RESET" create a new entry", add},
     {"exit", BOLD BLUE"exit:"RESET" exit without saving", exitdb},
 };
 size_t num_commands = sizeof(commands) / sizeof(commands[0]);
@@ -60,7 +60,7 @@ int main(int argc, char *argv[], char *envp[]) {
     if (!db.path)
       printf(BLUE"> " RESET);
     else if (db.edited)
-      printf(BOLD BLUE "[*%s]> " RESET, db.path);
+      printf(BLUE "[" BOLD "*%s" RESET BLUE "]> " RESET, db.path);
     else
       printf(BLUE "[%s]> " RESET, db.path);
 

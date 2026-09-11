@@ -19,8 +19,12 @@ void edit(struct db *db, char *arg) {
   int title_len = entry->tlen;
   get_title(entry, &title[0]);
 
+  int edited = 0;
   while (1) {
-    printf("[%s ~ %s]> ", db->path, title);
+    if (!edited)
+      printf(BLUE"[%s ~ %s]> " RESET, db->path, title);
+    else
+      printf(BLUE"[%s ~ "BOLD"*%s"RESET BLUE"]> " RESET, db->path, title);
 
     char *line;
     size_t len;
@@ -32,40 +36,37 @@ void edit(struct db *db, char *arg) {
       puts("username <username>: change username");
       puts("password <password>: change password");
       puts("save: save the updated entry into memory");
-      puts("exit: exit without saving");
+      puts("exit: exit edit mode");
 
     } else if (strncmp(line, "title ", 6) == 0) {
       memset(&title[0], 0, sizeof(title));
       memcpy(&title[0], line + 6, len - 6);
       title_len = len - 6;
       puts(BOLD GREEN"success"RESET);
-
+      edited=1;
     } else if (strncmp(line, "username ", 9) == 0) {
       len -= 9;
       memcpy(new_fields.username, line + 9, len);
       new_fields.ulen = len;
       getrandom(new_fields.username + len, 64 - len);
       puts(BOLD GREEN"success"RESET);
-
+      edited=1;
     } else if (strncmp(line, "password ", 9) == 0) {
       len -= 9;
       memcpy(new_fields.password, line + 9, len);
       new_fields.plen = len;
       getrandom(new_fields.password + len, 64 - len);
       puts(BOLD GREEN"success"RESET);
-
+      edited=1;
     } else if (strcmp(line, "save") == 0) {
       memcpy(entry->title, &title[0], title_len);
       entry->tlen = title_len;
       crypt(entry, &new_fields, 1);
-      free(line);
       db->edited |= 1;
       break;
-
     } else if (strcmp(line, "exit") == 0) {
       free(line);
       return;
-
     } else {
       puts(RED"unknown command"RESET);
     }

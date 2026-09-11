@@ -57,7 +57,7 @@ void list(struct db *db, char *_);
 void show(struct db *db, char *arg);
 void delete(struct db *db, char *arg);
 void edit(struct db *db, char *arg);
-void new(struct db *db, char *_);
+void add(struct db *db, char *_);
 void search(struct db *db, char *arg);
 
 // ui

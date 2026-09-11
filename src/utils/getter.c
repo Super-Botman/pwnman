@@ -14,7 +14,7 @@ void get_pass(struct fields *fields, char *pass) {
     puts(RED"invalid entry"RESET);
     return;
   }
-  memset(pass, 0, sizeof(fields->password));
+  memset(pass, 0, sizeof(fields->password)+1);
   memcpy(pass, fields->password, fields->plen);
 }
 
@@ -23,6 +23,6 @@ void get_user(struct fields *fields, char *user) {
     puts(RED"invalid entry"RESET);
     return;
   }
-  memset(user, 0, sizeof(fields->username));
+  memset(user, 0, sizeof(fields->username)+1);
   memcpy(user, fields->username, fields->ulen);
 }
