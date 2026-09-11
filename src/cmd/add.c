@@ -56,7 +56,7 @@ void add(struct db *db, char *_) {
     putc('\n');
     len = 64;
   }
-  getrandom(new_fields->password + len + 1, 64 - len - 1);
+  getrandom(new_fields->password + len, 64 - len);
   new_fields->plen = len;
 
   crypt(new_entry, new_fields, 1);
