@@ -1,8 +1,5 @@
 # Password manager
-A simple - yet effective - password manager dev without libc for a 0x41 project
---
-
-**DO NOT USE AS A REAL PASSWORD MANAGER**
+A simple - yet effective - password manager dev without libc for a 0x41 project.
 
 ## Usage
 This password manager use a repl inteface with a list of commands that allows to interact with a custom vault format.
