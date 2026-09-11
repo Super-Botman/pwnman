@@ -27,8 +27,8 @@ void edit(struct db *db, char *arg) {
       printf(BLUE"[%s ~ "BOLD"*%s"RESET BLUE"]> " RESET, db->path, title);
 
     char *line;
-    size_t len;
-    getline(&line, &len);
+    size_t n = 0;
+    size_t len = getline(&line, &n);
 
     if (strcmp(line, "help") == 0) {
       puts("Edit mode");
@@ -70,7 +70,5 @@ void edit(struct db *db, char *arg) {
     } else {
       puts(RED"unknown command"RESET);
     }
-
-    free(line);
   }
 }
