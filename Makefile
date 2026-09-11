@@ -68,6 +68,7 @@ $(OBJ_DIR)/%.o: %.asm
 .PHONY: clean
 clean:
 	$(RM) -r $(OBJ_DIR)
+	$(MAKE) -C libotman clean
 
 .PHONY: fclean
 fclean: clean
@@ -76,5 +77,6 @@ fclean: clean
 
 .PHONY: re
 re: clean all
+	$(MAKE) -C libotman re
 
 -include $(DEP)
