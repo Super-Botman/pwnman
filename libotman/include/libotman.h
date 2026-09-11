@@ -36,6 +36,9 @@ typedef long long ssize_t;
 
 #define BUFF_SIZE 256
 
+#define INT_MAX ((size_t)1<<31)-1
+#define UINT_MAX ((size_t)1<<32)-1
+
 // io
 ssize_t write(int fd, char *buf, long count);
 ssize_t read(int fd, char *buf, long count);
