@@ -1,15 +1,4 @@
-#include "include/libotman.h"
 #include "pwnman.h"
-
-char randchar(void) {
-    unsigned char b;
-    while (1) {
-        getrandom((char *)&b, 1);
-        if (b < 52) {
-            return (b < 26) ? 'a' + b : 'A' + (b - 26);
-        }
-    }
-}
 
 void add(struct db *db, char *_) {
   (void)_;
@@ -40,7 +29,7 @@ void add(struct db *db, char *_) {
 
   printf("Username (max 64): ");
   len = readline(new_fields->username, sizeof new_fields->username);
-  getrandom(new_fields->username + len + 1, 64 - len - 1);
+  getrandom(new_fields->username + len, 64 - len);
   new_fields->ulen = len;
 
   puts("You can press enter to generate a random password");

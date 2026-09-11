@@ -183,3 +183,13 @@ int atoi(char *p) {
      }
      return k;
 }
+
+char randchar(void) {
+    unsigned char b;
+    while (1) {
+        getrandom((char *)&b, 1);
+        if (b < 52) {
+            return (b < 26) ? 'a' + b : 'A' + (b - 26);
+        }
+    }
+}

@@ -1,5 +1,4 @@
 #include "pwnman.h"
-#include <string.h>
 
 void closedb(struct db *db, char *_) {
   (void)_;

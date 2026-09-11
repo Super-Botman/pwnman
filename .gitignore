@@ -3,3 +3,4 @@ build
 libotman.a
 pwnman
 test.db
+db*
